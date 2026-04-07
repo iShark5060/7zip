@@ -1,0 +1,31 @@
+/_Resources/
+
+# nmake: object dir ($O → o, or PLATFORM → x64 / x86 / arm64 / arm)
+**/o/
+**/x64/
+**/x86/
+**/arm64/
+**/arm/
+
+# Compiled objects & binaries
+*.obj
+*.pch
+*.pdb
+*.idb
+*.ilk
+*.iobj
+*.ipdb
+*.exp
+*.lib
+*.dll
+*.exe
+*.res
+
+# Visual Studio / MSVC
+.vs/
+*.user
+*.suo
+*.sdf
+*.VC.db
+*.VC.opendb
+*.aps

@@ -43,7 +43,10 @@ struct CPageInfo
   UINT ID;
 };
 
+typedef int (CALLBACK *Z7_MyPropertySheetCallback)(HWND hwnd, UINT msg, LPARAM lParam);
+
 INT_PTR MyPropertySheet(const CObjectVector<CPageInfo> &pagesInfo, HWND hwndParent, const UString &title);
+INT_PTR MyPropertySheet(const CObjectVector<CPageInfo> &pagesInfo, HWND hwndParent, const UString &title, Z7_MyPropertySheetCallback propSheetCallback);
 
 }}
 

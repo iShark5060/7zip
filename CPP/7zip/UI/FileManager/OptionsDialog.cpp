@@ -26,6 +26,18 @@
 
 #include "resource.h"
 
+#ifdef Z7_WIN_DARKMODE_FM
+#include "Z7DarkMode.h"
+
+static int CALLBACK Z7_OptionsPropSheetCallback(HWND hwnd, UINT msg, LPARAM lParam)
+{
+  UNUSED_VAR(lParam);
+  if (msg == PSCB_INITIALIZED)
+    Z7DarkMode_ApplyPropertySheet(hwnd);
+  return 0;
+}
+#endif
+
 using namespace NWindows;
 
 void OptionsDialog(HWND hwndOwner, HINSTANCE hInstance);
@@ -61,7 +73,11 @@ void OptionsDialog(HWND hwndOwner, HINSTANCE /* hInstance */)
     page.Page = pagePointers[i];
   }
 
+  #ifdef Z7_WIN_DARKMODE_FM
+  const INT_PTR res = NControl::MyPropertySheet(pages, hwndOwner, LangString(IDS_OPTIONS), Z7_OptionsPropSheetCallback);
+  #else
   const INT_PTR res = NControl::MyPropertySheet(pages, hwndOwner, LangString(IDS_OPTIONS));
+  #endif
   
   if (res != -1 && res != 0)
   {

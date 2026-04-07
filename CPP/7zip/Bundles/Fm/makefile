@@ -81,4 +81,28 @@ GUI_OBJS = \
   $O\UpdateGUI.obj \
 
 
+# Omit Build.mak default $O\resource.res rule: it uses $** and would pass every prerequisite to rc.exe.
+NO_DEFAULT_RES=1
+
 !include "../../7zip.mak"
+
+# Extra deps so toolbar bitmap / icon edits invalidate resource.res; only resource.rc is passed to rc.
+FM_RES_FILE_DEPS = \
+  ..\..\UI\FileManager\FM.ico \
+  ..\..\UI\FileManager\Add.bmp \
+  ..\..\UI\FileManager\Add2.bmp \
+  ..\..\UI\FileManager\Extract.bmp \
+  ..\..\UI\FileManager\Extract2.bmp \
+  ..\..\UI\FileManager\Test.bmp \
+  ..\..\UI\FileManager\Test2.bmp \
+  ..\..\UI\FileManager\Copy.bmp \
+  ..\..\UI\FileManager\Copy2.bmp \
+  ..\..\UI\FileManager\Move.bmp \
+  ..\..\UI\FileManager\Move2.bmp \
+  ..\..\UI\FileManager\Delete.bmp \
+  ..\..\UI\FileManager\Delete2.bmp \
+  ..\..\UI\FileManager\Info.bmp \
+  ..\..\UI\FileManager\Info2.bmp
+
+$O\resource.res: resource.rc ..\..\UI\FileManager\resource.rc $(FM_RES_FILE_DEPS)
+	rc $(RFLAGS) -fo$@ resource.rc

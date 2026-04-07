@@ -41,6 +41,10 @@
 #include "StringUtils.h"
 #include "ViewSettings.h"
 
+#ifdef Z7_WIN_DARKMODE_FM
+#include "Z7DarkMode.h"
+#endif
+
 using namespace NWindows;
 using namespace NFile;
 using namespace NFind;
@@ -617,6 +621,10 @@ static int WINAPI WinMain2(int nCmdShow)
 
   InitCommonControls();
 
+  #ifdef Z7_WIN_DARKMODE_FM
+  Z7DarkMode_Init();
+  #endif
+
 #ifdef Z7_USE_DYN_ComCtl32Version
   g_ComCtl32Version = ::GetDllVersion(TEXT("comctl32.dll"));
   g_LVN_ITEMACTIVATE_Support = (g_ComCtl32Version >= MAKELONG(71, 4));
@@ -1016,6 +1024,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       }
 
       g_WindowWasCreated = true;
+
+      #ifdef Z7_WIN_DARKMODE_FM
+      Z7DarkMode_ApplyMainWindow(hWnd);
+      #endif
       
       // g_SplitterPos = 0;
 
@@ -1132,10 +1144,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       return 0;
     */
       
-    /*
     case WM_SETTINGCHANGE:
+    {
+      #ifdef Z7_WIN_DARKMODE_FM
+      Z7DarkMode_OnSettingChange(hWnd, lParam);
+      #endif
       break;
-    */
+    }
     
     case WM_NOTIFY:
     {

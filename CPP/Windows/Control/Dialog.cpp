@@ -10,6 +10,10 @@
 
 #include "Dialog.h"
 
+#if defined(Z7_WIN_DARKMODE_FM)
+#include "../../7zip/UI/FileManager/Z7DarkMode.h"
+#endif
+
 extern HINSTANCE g_hInstance;
 #ifndef _UNICODE
 extern bool g_IsNT;
@@ -51,7 +55,14 @@ bool CDialog::OnMessage(UINT message, WPARAM wParam, LPARAM lParam)
 {
   switch (message)
   {
-    case WM_INITDIALOG: return OnInit();
+    case WM_INITDIALOG:
+    {
+      const bool r = OnInit();
+      #if defined(Z7_WIN_DARKMODE_FM)
+      Z7DarkMode_ApplyDialog(_window);
+      #endif
+      return r;
+    }
     case WM_COMMAND: return OnCommand(HIWORD(wParam), LOWORD(wParam), lParam);
     case WM_NOTIFY: return OnNotify((UINT)wParam, (LPNMHDR) lParam);
     case WM_TIMER: return OnTimer(wParam, lParam);

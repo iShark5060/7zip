@@ -8,6 +8,10 @@
 
 #include "PropertyPage.h"
 
+#ifndef PFNPROPSHEETCALLBACK
+typedef int (CALLBACK *PFNPROPSHEETCALLBACK)(HWND, UINT, LPARAM);
+#endif
+
 extern HINSTANCE g_hInstance;
 #ifndef _UNICODE
 extern bool g_IsNT;
@@ -71,7 +75,7 @@ PROPSHEETHEADER fields depend from
 #define my_compatib_PROPSHEETPAGEW PROPSHEETPAGEW
 #endif
 
-INT_PTR MyPropertySheet(const CObjectVector<CPageInfo> &pagesInfo, HWND hwndParent, const UString &title)
+INT_PTR MyPropertySheet(const CObjectVector<CPageInfo> &pagesInfo, HWND hwndParent, const UString &title, Z7_MyPropertySheetCallback propSheetCallback)
 {
   unsigned i;
   #ifndef _UNICODE
@@ -135,6 +139,8 @@ INT_PTR MyPropertySheet(const CObjectVector<CPageInfo> &pagesInfo, HWND hwndPare
     PROPSHEETHEADERA sheet;
     sheet.dwSize = sizeof(sheet);
     sheet.dwFlags = PSH_PROPSHEETPAGE;
+    if (propSheetCallback)
+      sheet.dwFlags |= PSH_USECALLBACK;
     sheet.hwndParent = hwndParent;
     sheet.hInstance = g_hInstance;
     AString titleA (GetSystemString(title));
@@ -142,7 +148,7 @@ INT_PTR MyPropertySheet(const CObjectVector<CPageInfo> &pagesInfo, HWND hwndPare
     sheet.nPages = pagesA.Size();
     sheet.nStartPage = 0;
     sheet.ppsp = (LPCPROPSHEETPAGEA)(const void *)pagesA.ConstData();
-    sheet.pfnCallback = NULL;
+    sheet.pfnCallback = (PFNPROPSHEETCALLBACK)propSheetCallback;
     return ::PropertySheetA(&sheet);
   }
   else
@@ -151,15 +157,22 @@ INT_PTR MyPropertySheet(const CObjectVector<CPageInfo> &pagesInfo, HWND hwndPare
     PROPSHEETHEADERW sheet;
     sheet.dwSize = sizeof(sheet);
     sheet.dwFlags = PSH_PROPSHEETPAGE;
+    if (propSheetCallback)
+      sheet.dwFlags |= PSH_USECALLBACK;
     sheet.hwndParent = hwndParent;
     sheet.hInstance = g_hInstance;
     sheet.pszCaption = title;
     sheet.nPages = pagesW.Size();
     sheet.nStartPage = 0;
     sheet.ppsp = (LPCPROPSHEETPAGEW)(const void *)pagesW.ConstData();
-    sheet.pfnCallback = NULL;
+    sheet.pfnCallback = (PFNPROPSHEETCALLBACK)propSheetCallback;
     return ::PropertySheetW(&sheet);
   }
+}
+
+INT_PTR MyPropertySheet(const CObjectVector<CPageInfo> &pagesInfo, HWND hwndParent, const UString &title)
+{
+  return MyPropertySheet(pagesInfo, hwndParent, title, NULL);
 }
 
 }}

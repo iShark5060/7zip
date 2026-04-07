@@ -28,9 +28,15 @@ OBJS = \
   $(CRYPTO_OBJS) \
   $(C_OBJS) \
   $(ASM_OBJS) \
+  $(Z7_DARKMODE_OBJS) \
   $O\resource.res \
 
 !include "../../../Build.mak"
+
+!IFDEF Z7_DARKMODE_LINK
+# UNICODE/_UNICODE: required so Win32 TCHAR/WC_* macros match darkmodelib (wchar_t / std::wstring).
+Z7_DARKMODE_COMPILE=$(CC) $(CFLAGS_O2) /std:c++20 /utf-8 /WX- -DUNICODE -D_UNICODE -I"$(Z7_DARKMODE_ROOT)\include" -I"$(Z7_DARKMODE_ROOT)\src" -D_DARKMODELIB_NO_INI_CONFIG -D_WINDOWS -DSTRICT_TYPED_ITEMIDS -DNOMINMAX -DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DSUPPORT_UTF8
+!ENDIF
 
 # MAK_SINGLE_FILE = 1
 
@@ -234,6 +240,40 @@ $(C_OBJS): ../../../../C/$(*B).c
 	$(COMPLB_O2)
 {../../../../C}.c{$O}.obj::
 	$(CCOMPLB)
+
+!ENDIF
+
+!IFDEF Z7_DARKMODE_LINK
+
+$O\DarkModeSubclass.obj: "$(Z7_DARKMODE_ROOT)\src\DarkModeSubclass.cpp"
+	$(Z7_DARKMODE_COMPILE) -Fo$@ "$(Z7_DARKMODE_ROOT)\src\DarkModeSubclass.cpp"
+
+$O\DmlibColor.obj: "$(Z7_DARKMODE_ROOT)\src\DmlibColor.cpp"
+	$(Z7_DARKMODE_COMPILE) -Fo$@ "$(Z7_DARKMODE_ROOT)\src\DmlibColor.cpp"
+
+$O\DmlibDpi.obj: "$(Z7_DARKMODE_ROOT)\src\DmlibDpi.cpp"
+	$(Z7_DARKMODE_COMPILE) -Fo$@ "$(Z7_DARKMODE_ROOT)\src\DmlibDpi.cpp"
+
+$O\DmlibHook.obj: "$(Z7_DARKMODE_ROOT)\src\DmlibHook.cpp"
+	$(Z7_DARKMODE_COMPILE) -Fo$@ "$(Z7_DARKMODE_ROOT)\src\DmlibHook.cpp"
+
+$O\DmlibIni.obj: "$(Z7_DARKMODE_ROOT)\src\DmlibIni.cpp"
+	$(Z7_DARKMODE_COMPILE) -Fo$@ "$(Z7_DARKMODE_ROOT)\src\DmlibIni.cpp"
+
+$O\DmlibPaintHelper.obj: "$(Z7_DARKMODE_ROOT)\src\DmlibPaintHelper.cpp"
+	$(Z7_DARKMODE_COMPILE) -Fo$@ "$(Z7_DARKMODE_ROOT)\src\DmlibPaintHelper.cpp"
+
+$O\DmlibSubclass.obj: "$(Z7_DARKMODE_ROOT)\src\DmlibSubclass.cpp"
+	$(Z7_DARKMODE_COMPILE) -Fo$@ "$(Z7_DARKMODE_ROOT)\src\DmlibSubclass.cpp"
+
+$O\DmlibSubclassControl.obj: "$(Z7_DARKMODE_ROOT)\src\DmlibSubclassControl.cpp"
+	$(Z7_DARKMODE_COMPILE) -Fo$@ "$(Z7_DARKMODE_ROOT)\src\DmlibSubclassControl.cpp"
+
+$O\DmlibSubclassWindow.obj: "$(Z7_DARKMODE_ROOT)\src\DmlibSubclassWindow.cpp"
+	$(Z7_DARKMODE_COMPILE) -Fo$@ "$(Z7_DARKMODE_ROOT)\src\DmlibSubclassWindow.cpp"
+
+$O\DmlibWinApi.obj: "$(Z7_DARKMODE_ROOT)\src\DmlibWinApi.cpp"
+	$(Z7_DARKMODE_COMPILE) -Fo$@ "$(Z7_DARKMODE_ROOT)\src\DmlibWinApi.cpp"
 
 !ENDIF
 

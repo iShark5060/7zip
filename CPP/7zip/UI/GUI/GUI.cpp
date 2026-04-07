@@ -28,6 +28,10 @@
 #include "../FileManager/StringUtils.h"
 #include "../FileManager/LangUtils.h"
 
+#if defined(Z7_WIN_DARKMODE_FM) && defined(_WIN32) && !defined(UNDER_CE)
+#include "../FileManager/Z7DarkMode.h"
+#endif
+
 #include "BenchmarkDialog.h"
 #include "ExtractGUI.h"
 #include "HashGUI.h"
@@ -420,6 +424,10 @@ int APIENTRY WinMain(HINSTANCE  hInstance, HINSTANCE /* hPrevInstance */,
   #endif
 
   InitCommonControls();
+
+#if defined(Z7_WIN_DARKMODE_FM) && defined(_WIN32) && !defined(UNDER_CE)
+  Z7DarkMode_Init();
+#endif
 
 #ifdef Z7_USE_DYN_ComCtl32Version
   g_ComCtl32Version = ::GetDllVersion(TEXT("comctl32.dll"));

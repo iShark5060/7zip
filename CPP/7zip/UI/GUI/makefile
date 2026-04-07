@@ -143,6 +143,30 @@ C_OBJS = \
   $O\DllSecur.obj \
   $O\Threads.obj \
 
+!IFNDEF UNDER_CE
+!IF "$(Z7_NO_WIN32_DARKMODE)" == ""
+# Same as FM.mak: dark mode for standalone 7zG.exe (Add to archive, Extract, etc.)
+!IFNDEF Z7_DARKMODE_ROOT
+Z7_DARKMODE_ROOT = ..\..\UI\FileManager\third_party\win32-darkmodelib
+!ENDIF
+FM_OBJS = $(FM_OBJS) $O\Z7DarkMode.obj
+Z7_DARKMODE_LINK = 1
+CFLAGS = $(CFLAGS) -DZ7_WIN_DARKMODE_FM=1 -DZ7_WIN32_WINNT_MIN=0x0A00 -I"$(Z7_DARKMODE_ROOT)\include"
+LIBS = $(LIBS) dwmapi.lib UxTheme.lib Shlwapi.lib
+Z7_DARKMODE_OBJS = \
+  $O\DarkModeSubclass.obj \
+  $O\DmlibColor.obj \
+  $O\DmlibDpi.obj \
+  $O\DmlibHook.obj \
+  $O\DmlibIni.obj \
+  $O\DmlibPaintHelper.obj \
+  $O\DmlibSubclass.obj \
+  $O\DmlibSubclassControl.obj \
+  $O\DmlibSubclassWindow.obj \
+  $O\DmlibWinApi.obj \
+!ENDIF
+!ENDIF
+
 !include "../../Crc.mak"
 !include "../../Sort.mak"
 

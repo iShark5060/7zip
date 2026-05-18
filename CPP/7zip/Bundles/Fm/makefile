@@ -1,7 +1,5 @@
 PROG = 7zFM.exe
 
-# CFLAGS = $(CFLAGS) -DZ7_LARGE_PAGES
-
 !include "../Format7zF/Arc.mak"
 
 !include "../../UI/FileManager/FM.mak"
@@ -48,6 +46,7 @@ UI_COMMON_OBJS = \
   $O\CompressCall2.obj \
   $O\DefaultName.obj \
   $O\EnumDirItems.obj \
+  $O\ChainedExtract.obj \
   $O\Extract.obj \
   $O\ExtractingFilePath.obj \
   $O\HashCalc.obj \

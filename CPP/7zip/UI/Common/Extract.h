@@ -14,9 +14,19 @@
 
 #include "../Common/LoadCodecs.h"
 
+namespace NExtractOutDirMode {
+enum EEnum
+{
+  k_Direct = 0,
+  k_AddArcName,
+  k_ReplaceAsterisk
+};
+}
+
 struct CExtractOptionsBase
 {
   CBoolPair ElimDup;
+  bool EnableChainedExtract;
 
   bool ExcludeDirItems;
   bool ExcludeFileItems;
@@ -26,20 +36,23 @@ struct CExtractOptionsBase
   NExtract::NPathMode::EEnum PathMode;
   NExtract::NOverwriteMode::EEnum OverwriteMode;
   NExtract::NZoneIdMode::EEnum ZoneMode;
+  NExtractOutDirMode::EEnum OutDirMode;
 
   CExtractNtOptions NtOptions;
   
-  FString OutputDir;
+  FString OutputDir; // normalized : with path separator at the end
   UString HashDir;
 
   CExtractOptionsBase():
+      EnableChainedExtract(false),
       ExcludeDirItems(false),
       ExcludeFileItems(false),
       PathMode_Force(false),
       OverwriteMode_Force(false),
       PathMode(NExtract::NPathMode::kFullPaths),
       OverwriteMode(NExtract::NOverwriteMode::kAsk),
-      ZoneMode(NExtract::NZoneIdMode::kNone)
+      ZoneMode(NExtract::NZoneIdMode::kNone),
+      OutDirMode(NExtractOutDirMode::k_ReplaceAsterisk)
       {}
 };
 
@@ -86,6 +99,20 @@ struct CDecompressStat
     NumArchives = UnpackSize = AltStreams_UnpackSize = PackSize = NumFolders = NumFiles = NumAltStreams = 0;
   }
 };
+
+HRESULT DecompressArchive(
+    CCodecs *codecs,
+    const CArchiveLink &arcLink,
+    UInt64 packSize,
+    const NWildcard::CCensorNode &wildcardCensor,
+    const CExtractOptions &options,
+    bool calcCrc,
+    IExtractCallbackUI *callback,
+    IFolderArchiveExtractCallback *callbackFAE,
+    CArchiveExtractCallback *ecs,
+    UString &errorMessage,
+    UInt64 &stdInProcessed,
+    bool chainedMode);
 
 HRESULT Extract(
     // DECL_EXTERNAL_CODECS_LOC_VARS

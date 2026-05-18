@@ -2,7 +2,6 @@ MY_CONSOLE = 1
 
 !IFNDEF UNDER_CE
 CFLAGS = $(CFLAGS) -DZ7_DEVICE_FILE
-# -DZ7_LONG_PATH -DZ7_LARGE_PAGES
 !ENDIF
 
 CONSOLE_OBJS = \
@@ -25,6 +24,7 @@ UI_COMMON_OBJS = \
   $O\Bench.obj \
   $O\DefaultName.obj \
   $O\EnumDirItems.obj \
+  $O\ChainedExtract.obj \
   $O\Extract.obj \
   $O\ExtractingFilePath.obj \
   $O\HashCalc.obj \

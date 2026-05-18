@@ -8,7 +8,6 @@ LIBS = $(LIBS) ceshell.lib Commctrl.lib
 !ELSE
 LIBS = $(LIBS) comctl32.lib htmlhelp.lib comdlg32.lib gdi32.lib
 CFLAGS = $(CFLAGS) -DZ7_DEVICE_FILE
-# -DZ7_LONG_PATH -DZ7_LARGE_PAGES
 !ENDIF
 
 GUI_OBJS = \
@@ -76,9 +75,11 @@ WIN_CTRL_OBJS = \
   $O\MultiOutStream.obj \
   $O\ProgressUtils.obj \
   $O\PropId.obj \
+  $O\StreamBinder.obj \
   $O\StreamObjects.obj \
   $O\StreamUtils.obj \
   $O\UniqBlocks.obj \
+  $O\VirtThread.obj \
 
 UI_COMMON_OBJS = \
   $O\ArchiveCommandLine.obj \
@@ -87,6 +88,7 @@ UI_COMMON_OBJS = \
   $O\Bench.obj \
   $O\DefaultName.obj \
   $O\EnumDirItems.obj \
+  $O\ChainedExtract.obj \
   $O\Extract.obj \
   $O\ExtractingFilePath.obj \
   $O\HashCalc.obj \

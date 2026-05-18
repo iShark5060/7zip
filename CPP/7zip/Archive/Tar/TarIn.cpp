@@ -116,9 +116,11 @@ static bool ParseInt64(const char *p, Int64 &val, bool &isBin)
 static bool ParseInt64_MTime(const char *p, Int64 &val, bool &isBin)
 {
   // rare case tar : ZEROs in Docker-Windows TARs
+  // rare case tar : pax record : single ZERO byte followed by junk data
   // rare case tar : spaces
   isBin = false;
-  if (GetUi32(p) != 0)
+  // if (GetUi32(p))
+  if (p[0])
   for (unsigned i = 0; i < 12; i++)
     if (p[i] != ' ')
       return ParseInt64(p, val, isBin);
@@ -186,6 +188,7 @@ HRESULT CArchive::GetNextItemReal(CItemEx &item)
   filled = false;
 
   bool thereAreEmptyRecords = false;
+  unsigned numEmptyRecords = 0;
   for (;;)
   {
     size_t processedSize = NFileHeader::kRecordSize;
@@ -219,6 +222,9 @@ HRESULT CArchive::GetNextItemReal(CItemEx &item)
       break;
     item.HeaderSize += NFileHeader::kRecordSize;
     thereAreEmptyRecords = true;
+    numEmptyRecords++;
+    if (!InStream && numEmptyRecords >= 2)
+      return S_OK;
     RINOK(Progress(item, 0))
   }
   if (thereAreEmptyRecords)
@@ -1084,6 +1090,8 @@ HRESULT CArchive::ReadItem2(CItemEx &item)
 
 HRESULT CArchive::ReadItem(CItemEx &item)
 {
+  error = k_ErrorType_OK;
+  filled = false;
   item.HeaderPos = _phySize;
   
   const HRESULT res = ReadItem2(item);

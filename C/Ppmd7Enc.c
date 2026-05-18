@@ -49,7 +49,7 @@ static void Ppmd7z_RangeEnc_ShiftLow(CPpmd7 *p)
 /*
 #define Ppmd7z_RangeEnc_Encode(p, start, _size_) \
   { UInt32 size = _size_; \
-    R->Low += start * R->Range; \
+    R->Low += (UInt64)start * R->Range; \
     R->Range *= size; \
     RC_NORM_LOCAL(p); }
 */
@@ -58,7 +58,7 @@ Z7_FORCE_INLINE
 // Z7_NO_INLINE
 static void Ppmd7z_RangeEnc_Encode(CPpmd7 *p, UInt32 start, UInt32 size)
 {
-  R->Low += start * R->Range;
+  R->Low += (UInt64)start * R->Range;
   R->Range *= size;
   RC_NORM_LOCAL(p)
 }
@@ -89,18 +89,18 @@ static
 void Ppmd7z_EncodeSymbol(CPpmd7 *p, int symbol)
 {
   size_t charMask[256 / sizeof(size_t)];
-  
+
   if (p->MinContext->NumStats != 1)
   {
     CPpmd_State *s = Ppmd7_GetStats(p, p->MinContext);
     UInt32 sum;
     unsigned i;
-   
 
-    
-    
+
+
+
     R->Range /= p->MinContext->Union2.SummFreq;
-    
+
     if (s->Symbol == symbol)
     {
       // R->Range /= p->MinContext->Union2.SummFreq;
@@ -128,7 +128,7 @@ void Ppmd7z_EncodeSymbol(CPpmd7 *p, int symbol)
 
     // R->Range /= p->MinContext->Union2.SummFreq;
     RC_Encode(sum, p->MinContext->Union2.SummFreq - sum)
-    
+
     p->HiBitsFlag = PPMD7_HiBitsFlag_3(p->FoundState->Symbol);
     PPMD_SetAllBitsIn256Bytes(charMask)
     // MASK(s->Symbol) = 0;
@@ -161,7 +161,7 @@ void Ppmd7z_EncodeSymbol(CPpmd7 *p, int symbol)
       // RangeEnc_EncodeBit_0(p, bound);
       R->Range = bound;
       RC_NORM_1(p)
-      
+
       // p->FoundState = s;
       // Ppmd7_UpdateBin(p);
       {
@@ -186,7 +186,7 @@ void Ppmd7z_EncodeSymbol(CPpmd7 *p, int symbol)
     R->Low += bound;
     R->Range -= bound;
     RC_NORM_LOCAL(p)
-    
+
     PPMD_SetAllBitsIn256Bytes(charMask)
     MASK(s->Symbol) = 0;
     p->PrevSuccess = 0;
@@ -199,7 +199,7 @@ void Ppmd7z_EncodeSymbol(CPpmd7 *p, int symbol)
     UInt32 sum, escFreq;
     CPpmd7_Context *mc;
     unsigned i, numMasked;
-    
+
     RC_NORM_REMOTE(p)
 
     mc = p->MinContext;
@@ -216,7 +216,7 @@ void Ppmd7z_EncodeSymbol(CPpmd7 *p, int symbol)
     while (i == numMasked);
 
     p->MinContext = mc;
-    
+
     // see = Ppmd7_MakeEscFreq(p, numMasked, &escFreq);
     {
       if (i != 256)
@@ -276,7 +276,7 @@ void Ppmd7z_EncodeSymbol(CPpmd7 *p, int symbol)
           while (--num2);
         }
 
-        
+
         R->Range /= sum;
         RC_EncodeFinal(low, freq)
         Ppmd7_Update2(p);
@@ -286,7 +286,7 @@ void Ppmd7z_EncodeSymbol(CPpmd7 *p, int symbol)
       s++;
     }
     while (--i);
-    
+
     {
       const UInt32 total = sum + escFreq;
       see->Summ = (UInt16)(see->Summ + total);

@@ -254,11 +254,12 @@ MY_CPU_64BIT means that processor can work with 64-bit registers.
 #endif
 
 
+// _LITTLE_ENDIAN macro can be defined for big-endian platform with some compilers
+ 
 #if defined(MY_CPU_X86_OR_AMD64) \
     || defined(MY_CPU_ARM_LE) \
     || defined(MY_CPU_ARM64_LE) \
     || defined(MY_CPU_IA64_LE) \
-    || defined(_LITTLE_ENDIAN) \
     || defined(__LITTLE_ENDIAN__) \
     || defined(__ARMEL__) \
     || defined(__THUMBEL__) \
@@ -690,6 +691,13 @@ BoolInt CPU_IsSupported_SHA2(void);
 BoolInt CPU_IsSupported_AES(void);
 #endif
 BoolInt CPU_IsSupported_SHA512(void);
+
+#elif defined(MY_CPU_PPC_OR_PPC64)
+
+BoolInt CPU_IsSupported_VSX(void);
+BoolInt CPU_IsSupported_VEC_CRYPTO(void);
+BoolInt CPU_IsSupported_ARCH_3_00(void);
+BoolInt CPU_IsSupported_ARCH_3_1(void);
 
 #endif
 

@@ -8,6 +8,7 @@
 #include "../../../Windows/ResourceString.h"
 
 #include "../FileManager/LangUtils.h"
+#include "../FileManager/Z7DarkMode.h"
 
 using namespace NWindows;
 
@@ -16,7 +17,7 @@ extern bool g_DisableUserQuestions;
 void ShowErrorMessage(HWND window, LPCWSTR message)
 {
   if (!g_DisableUserQuestions)
-    ::MessageBoxW(window, message, L"7-Zip", MB_OK | MB_ICONSTOP);
+    Z7_MessageBoxW(window, message, L"7-Zip", MB_OK | MB_ICONSTOP);
 }
 
 void ShowErrorMessageHwndRes(HWND window, UInt32 resID)

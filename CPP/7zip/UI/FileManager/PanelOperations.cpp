@@ -15,6 +15,7 @@
 #include "FSFolder.h"
 #include "FormatUtils.h"
 #include "LangUtils.h"
+#include "Z7DarkMode.h"
 #include "Panel.h"
 #include "UpdateCallback100.h"
 
@@ -47,11 +48,11 @@ public:
   CMyComPtr<IFolderOperations> FolderOperations;
   CMyComPtr<IProgress> UpdateCallback;
   CUpdateCallback100Imp *UpdateCallbackSpec;
-  
+
   CThreadFolderOperations(EFolderOpType opType): OpType(opType) {}
   HRESULT DoOperation(CPanel &panel, const UString &progressTitle, const UString &titleError);
 };
-  
+
 HRESULT CThreadFolderOperations::ProcessVirt()
 {
   NCOM::CComInitializer comInitializer;
@@ -215,7 +216,7 @@ Z7_DIAGNOSTIC_IGNORE_CAST_FUNCTION
     }
   }
   #endif
- 
+
   // DeleteItemsInternal
 
   if (!CheckBeforeUpdate(IDS_ERROR_DELETING))
@@ -244,7 +245,7 @@ Z7_DIAGNOSTIC_IGNORE_CAST_FUNCTION
     messageID = IDS_WANT_TO_DELETE_ITEMS;
     messageParam = NumberToString(indices.Size());
   }
-  if (::MessageBoxW(GetParent(), MyFormatNew(messageID, messageParam), LangString(titleID),
+  if (Z7_MessageBoxW(GetParent(), MyFormatNew(messageID, messageParam), LangString(titleID),
       MB_YESNOCANCEL | MB_ICONQUESTION) != IDYES)
     return;
 
@@ -375,7 +376,7 @@ void CPanel::CreateFolder()
   UString newName;
   if (!Dlg_CreateFolder(GetParent(), newName))
     return;
-  
+
   if (!IsCorrectFsName(newName))
   {
     MessageBox_Error_HRESULT(E_INVALIDARG);
@@ -392,7 +393,7 @@ void CPanel::CreateFolder()
     }
     newName = correctName;
   }
-  
+
   HRESULT res;
   CDisableNotify disableNotify(*this);
   {
@@ -443,7 +444,7 @@ void CPanel::CreateFile()
     return;
 
   CDisableNotify disableNotify(*this);
-  
+
   UString newName = dlg.Value;
 
   if (IsFSFolder())

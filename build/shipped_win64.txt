@@ -1,0 +1,9 @@
+7z.exe
+7zG.exe
+7zFM.exe
+7z.dll
+7-zip.dll
+7z.sfx
+7zCon.sfx
+7za.exe
+7zr.exe

@@ -17,6 +17,7 @@ static const UINT kTimerElapse = 100;
 
 #ifdef Z7_LANG
 #include "LangUtils.h"
+#include "Z7DarkMode.h"
 #endif
 
 HRESULT CProgressSync::ProcessStopAndPause()
@@ -170,7 +171,7 @@ bool CProgressDialog::OnButtonClicked(unsigned buttonID, HWND buttonHWND)
       bool paused = Sync.GetPaused();
       Sync.SetPaused(true);
       _inCancelMessageBox = true;
-      int res = ::MessageBoxW(*this, L"Are you sure you want to cancel?", _title, MB_YESNOCANCEL);
+      int res = Z7_MessageBoxW(*this, L"Are you sure you want to cancel?", _title, MB_YESNOCANCEL);
       _inCancelMessageBox = false;
       Sync.SetPaused(paused);
       if (res == IDCANCEL || res == IDNO)

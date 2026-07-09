@@ -9,6 +9,7 @@
 #include "../../../Windows/FileName.h"
 
 #include "LangUtils.h"
+#include "Z7DarkMode.h"
 
 #include "BrowseDialog.h"
 #include "CopyDialogRes.h"
@@ -90,10 +91,10 @@ bool CLinkDialog::OnInit()
   LangSetWindowText(*this, IDD_LINK);
   LangSetDlgItems(*this, kLangIDs, Z7_ARRAY_SIZE(kLangIDs));
   #endif
-  
+
   _pathFromCombo.Attach(GetItem(IDC_LINK_PATH_FROM));
   _pathToCombo.Attach(GetItem(IDC_LINK_PATH_TO));
-  
+
   if (!FilePath.IsEmpty())
   {
     NFind::CFileInfo fi;
@@ -113,7 +114,7 @@ bool CLinkDialog::OnInit()
           if (lastError)
             error = NError::MyFormatMessage(lastError);
         }
-        
+
         UString s = attr.GetPath();
         if (!attr.IsSymLink_WSL())
         if (!attr.IsOkNamePair())
@@ -132,13 +133,13 @@ bool CLinkDialog::OnInit()
           }
         }
 
-        
+
         SetItemText(IDT_LINK_PATH_TO_CUR, s);
-        
+
         const UString destPath = attr.GetPath();
         _pathFromCombo.SetText(FilePath);
         _pathToCombo.SetText(destPath);
-        
+
         // if (res)
         {
           if (attr.IsMountPoint())
@@ -153,7 +154,7 @@ bool CLinkDialog::OnInit()
                 IDR_LINK_TYPE_SYM_FILE;
             // if (attr.IsRelative()) linkType = IDR_LINK_TYPE_SYM_RELATIVE;
           }
-          
+
           if (linkType != 0)
             Set_LinkType_Radio(linkType);
         }
@@ -249,7 +250,7 @@ void CLinkDialog::OnButton_SetPath(bool to)
 
 void CLinkDialog::ShowError(const wchar_t *s)
 {
-  ::MessageBoxW(*this, s, L"7-Zip", MB_ICONERROR);
+  Z7_MessageBoxW(*this, s, L"7-Zip", MB_ICONERROR);
 }
 
 void CLinkDialog::ShowLastErrorMessage()
@@ -295,7 +296,7 @@ void CLinkDialog::OnButton_Link()
     ShowError(L"Incorrect link type");
     return;
   }
-  
+
   if (idb == IDR_LINK_TYPE_HARD)
   {
     if (!NDir::MyCreateHardLink(us2fs(from), us2fs(to)))
@@ -323,7 +324,7 @@ void CLinkDialog::OnButton_Link()
       ShowError(L"Incorrect link");
       return;
     }
-    
+
     CReparseAttr attr;
     if (!attr.Parse(data, data.Size()))
     {

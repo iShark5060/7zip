@@ -11,6 +11,7 @@
 #include "LangPage.h"
 #include "LangPageRes.h"
 #include "LangUtils.h"
+#include "Z7DarkMode.h"
 #include "RegistryUtils.h"
 
 using namespace NWindows;
@@ -101,7 +102,7 @@ bool CLangPage::OnInit()
   CLang lang;
   UString error;
   UString n;
-  
+
   while (enumerator.Next(fi))
   {
     if (fi.IsDir())
@@ -122,7 +123,7 @@ bool CLangPage::OnInit()
       error += fs2us(fi.Name);
       continue;
     }
-    
+
     const UString shortName = fs2us(fi.Name.Left(pos));
 
     CLangListRecord listRecord;
@@ -164,7 +165,7 @@ bool CLangPage::OnInit()
     const wchar_t *native = lang.Get(IDS_LANG_NATIVE);
     if (native)
       NativeLangString(s, native);
-    
+
     listRecord.Name = s;
     listRecord.LangInfoIndex = _langs.Size();
     listRecords.Add(listRecord);
@@ -196,7 +197,7 @@ bool CLangPage::OnInit()
           id2 = lang._ids[i2];
           id2_defined = true;
         }
-        
+
         bool id1_is_smaller = true;
         if (id1_defined)
         {
@@ -258,9 +259,9 @@ bool CLangPage::OnInit()
   }
 
   ShowLangInfo();
-  
+
   if (!error.IsEmpty())
-    MessageBoxW(NULL, error, L"Error in Lang file", MB_ICONERROR);
+    Z7_MessageBoxW(NULL, error, L"Error in Lang file", MB_ICONERROR);
   return CPropertyPage::OnInit();
 }
 

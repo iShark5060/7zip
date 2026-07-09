@@ -12,6 +12,7 @@ void Z7DarkMode_ApplyMainWindow(HWND hwnd);
 bool Z7DarkMode_OnSettingChange(HWND hwnd, LPARAM lParam);
 void Z7DarkMode_ApplyDialog(HWND hwnd);
 void Z7DarkMode_ApplyPropertySheet(HWND hwnd);
+int Z7_MessageBoxW(HWND hwnd, LPCWSTR text, LPCWSTR caption, UINT type);
 
 #else
 
@@ -20,6 +21,8 @@ static inline void Z7DarkMode_ApplyMainWindow(HWND) {}
 static inline bool Z7DarkMode_OnSettingChange(HWND, LPARAM) { return false; }
 static inline void Z7DarkMode_ApplyDialog(HWND) {}
 static inline void Z7DarkMode_ApplyPropertySheet(HWND) {}
+static inline int Z7_MessageBoxW(HWND hwnd, LPCWSTR text, LPCWSTR caption, UINT type)
+  { return (int)::MessageBoxW(hwnd, text, caption, type); }
 
 #endif
 

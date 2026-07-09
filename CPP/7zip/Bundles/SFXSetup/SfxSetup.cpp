@@ -21,6 +21,7 @@
 #include "../../../Windows/ResourceString.h"
 
 #include "../../UI/Explorer/MyMessages.h"
+#include "../../UI/FileManager/Z7DarkMode.h"
 
 #include "ExtractEngine.h"
 
@@ -55,7 +56,7 @@ static bool ReadDataString(CFSTR fileName, AString &stringResult)
   Byte buffer[kBufferSize];
   const size_t startSize1 = sizeof(kStartID) - 1;
   const size_t endSize1 = sizeof(kEndID) - 1;
-  
+
   size_t numBytesPrev = 0;
   bool scanMode = true;
   UInt32 posTotal = 0;
@@ -185,12 +186,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE /* hPrevInstance */,
       dirPrefix = pairs[index].String;
     if (!installPrompt.IsEmpty() && !assumeYes)
     {
-      if (MessageBoxW(NULL, installPrompt, friendlyName, MB_YESNO |
+      if (Z7_MessageBoxW(NULL, installPrompt, friendlyName, MB_YESNO |
           MB_ICONQUESTION) != IDYES)
         return 0;
     }
     appLaunched = GetTextConfigValue(pairs, "RunProgram");
-    
+
     #ifdef MY_SHELL_EXECUTE
     executeFile = GetTextConfigValue(pairs, "ExecuteFile");
     executeParameters = GetTextConfigValue(pairs, "ExecuteParameters");
@@ -223,7 +224,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE /* hPrevInstance */,
     UString errorMessage;
     HRESULT result = ExtractArchive(codecs, fullPath, tempDirPath, showProgress,
       isCorrupt, errorMessage);
-    
+
     if (result != S_OK)
     {
       if (!assumeYes)
@@ -237,7 +238,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE /* hPrevInstance */,
         {
           if (errorMessage.IsEmpty())
             errorMessage = NError::MyFormatMessage(result);
-          ::MessageBoxW(NULL, errorMessage, NWindows::MyLoadString(IDS_EXTRACTION_ERROR_TITLE), MB_ICONERROR);
+          Z7_MessageBoxW(NULL, errorMessage, NWindows::MyLoadString(IDS_EXTRACTION_ERROR_TITLE), MB_ICONERROR);
         }
       }
       return 1;
@@ -249,7 +250,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE /* hPrevInstance */,
   if (!SetCurrentDir(tempDirPath))
     return 1;
   #endif
-  
+
   HANDLE hProcess = NULL;
 #ifdef MY_SHELL_EXECUTE
   if (!executeFile.IsEmpty())
@@ -304,13 +305,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE /* hPrevInstance */,
         return 1;
       }
     }
-    
+
     {
       FString s2 = tempDirPath;
       NName::NormalizeDirPathPrefix(s2);
       appLaunched.Replace(L"%%T" WSTRING_PATH_SEPARATOR, fs2us(s2));
     }
-    
+
     const UString appNameForError = appLaunched; // actually we need to rtemove parameters also
 
     appLaunched.Replace(L"%%T", fs2us(tempDirPath));
@@ -328,11 +329,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE /* hPrevInstance */,
     startupInfo.dwFlags = 0;
     startupInfo.cbReserved2 = 0;
     startupInfo.lpReserved2 = NULL;
-    
+
     PROCESS_INFORMATION processInformation;
-    
+
     const CSysString appLaunchedSys (GetSystemString(dirPrefix + appLaunched));
-    
+
     const BOOL createResult = CreateProcess(NULL,
         appLaunchedSys.Ptr_non_const(),
         NULL, NULL, FALSE, 0, NULL, NULL /*tempDir.GetPath() */,

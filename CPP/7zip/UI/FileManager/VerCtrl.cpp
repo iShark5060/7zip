@@ -10,6 +10,7 @@
 #include "App.h"
 #include "RegistryUtils.h"
 #include "OverwriteDialog.h"
+#include "Z7DarkMode.h"
 
 #include "resource.h"
 
@@ -141,7 +142,7 @@ static void UInt64_TO_FILETIME(UInt64 v, FILETIME &ft)
 void CApp::VerCtrl(unsigned id)
 {
   const CPanel &panel = GetFocusedPanel();
-  
+
   if (!panel.Is_IO_FS_Folder())
   {
     panel.MessageBox_Error_UnsupportOperation();
@@ -203,7 +204,7 @@ void CApp::VerCtrl(unsigned id)
       panel.MessageBox_Error(L"File is not read-only");
       return;
     }
-    
+
     if (!areIdentical)
     {
       if (fdi2.IsOpen)
@@ -281,7 +282,7 @@ void CApp::VerCtrl(unsigned id)
           false,  // (createAlways = false) means CREATE_NEW
           fdi, panel);
     }
-      
+
     if (!SetFileAttrib(path, fdi.Info.dwFileAttributes & ~(DWORD)FILE_ATTRIBUTE_READONLY))
     {
       panel.MessageBox_LastError();
@@ -290,7 +291,7 @@ void CApp::VerCtrl(unsigned id)
 
     return;
   }
-  
+
   if (isReadOnly)
   {
     panel.MessageBox_Error(L"File is read-only");
@@ -382,28 +383,28 @@ void CApp::VerCtrl(unsigned id)
         m = "Are you sure you want to revert file ?";
         m.Add_LF();
         m += path;
-        if (::MessageBoxW(panel.GetParent(), m, L"Version Control: File Revert", MB_OKCANCEL | MB_ICONQUESTION) != IDOK)
+        if (Z7_MessageBoxW(panel.GetParent(), m, L"Version Control: File Revert", MB_OKCANCEL | MB_ICONQUESTION) != IDOK)
           return;
         */
         COverwriteDialog dialog;
-        
+
         dialog.OldFileInfo.SetTime(fdi.Info.ftLastWriteTime);
         dialog.OldFileInfo.SetSize(fdi.GetSize());
         dialog.OldFileInfo.Path = fs2us(path);
-        
+
         dialog.NewFileInfo.SetTime(fdi2.Info.ftLastWriteTime);
         dialog.NewFileInfo.SetSize(fdi2.GetSize());
         dialog.NewFileInfo.Path = fs2us(path2);
 
         dialog.ShowExtraButtons = false;
         dialog.DefaultButton_is_NO = true;
-        
+
         INT_PTR writeAnswer = dialog.Create(panel.GetParent());
-        
+
         if (writeAnswer != IDYES)
           return;
       }
-      
+
       WriteFile(path,
           true,  // (createAlways = true) means CREATE_ALWAYS
           fdi2, panel);

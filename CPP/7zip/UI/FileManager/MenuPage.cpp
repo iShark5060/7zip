@@ -19,6 +19,7 @@
 #include "FormatUtils.h"
 #include "HelpUtils.h"
 #include "LangUtils.h"
+#include "Z7DarkMode.h"
 #include "MenuPage.h"
 #include "MenuPageRes.h"
 
@@ -98,7 +99,7 @@ bool CMenuPage::OnInit()
   _initMode = true;
 
   Clear_MenuChanged();
-  
+
 #ifdef Z7_LANG
   LangSetDlgItems(*this, kLangIDs, Z7_ARRAY_SIZE(kLangIDs));
 #endif
@@ -130,10 +131,10 @@ bool CMenuPage::OnInit()
   }
 
   const FString prefix = NDLL::GetModuleDirPrefix();
-  
+
   _dlls[0].ctrl = IDX_SYSTEM_INTEGRATE_TO_MENU;
   _dlls[1].ctrl = IDX_SYSTEM_INTEGRATE_TO_MENU_2;
-  
+
   _dlls[0].wow = 0;
   _dlls[1].wow =
       #ifdef _WIN64
@@ -290,7 +291,7 @@ bool CMenuPage::OnInit()
 
 static void ShowMenuErrorMessage(const wchar_t *m, HWND hwnd)
 {
-  MessageBoxW(hwnd, m, L"7-Zip", MB_ICONERROR);
+  Z7_MessageBoxW(hwnd, m, L"7-Zip", MB_ICONERROR);
 }
 
 #endif
@@ -299,7 +300,7 @@ static void ShowMenuErrorMessage(const wchar_t *m, HWND hwnd)
 LONG CMenuPage::OnApply()
 {
   #ifndef UNDER_CE
-  
+
   for (unsigned d = 2; d != 0;)
   {
     d--;
@@ -330,7 +331,7 @@ LONG CMenuPage::OnApply()
 
     ci.MenuIcons.Val = IsButtonCheckedBool(IDX_SYSTEM_ICON_IN_MENU);
     ci.MenuIcons.Def = _menuIcons_Changed;
-    
+
     ci.ElimDup.Val = IsButtonCheckedBool(IDX_EXTRACT_ELIM_DUP);
     ci.ElimDup.Def = _elimDup_Changed;
 
@@ -342,11 +343,11 @@ LONG CMenuPage::OnApply()
     }
 
     ci.Flags = 0;
-    
+
     for (unsigned i = 0; i < Z7_ARRAY_SIZE(kMenuItems); i++)
       if (_listView.GetCheckState(i))
         ci.Flags |= kMenuItems[i].Flag;
-    
+
     ci.Flags_Def = _flags_Changed;
     ci.Save();
 
@@ -385,11 +386,11 @@ bool CMenuPage::OnButtonClicked(unsigned buttonID, HWND buttonHWND)
     case IDX_SYSTEM_ICON_IN_MENU: _menuIcons_Changed = true; break;
     case IDX_EXTRACT_ELIM_DUP: _elimDup_Changed = true; break;
     // case IDX_EXTRACT_WRITE_ZONE: _writeZone_Changed = true; break;
-      
+
     default:
       return CPropertyPage::OnButtonClicked(buttonID, buttonHWND);
   }
-  
+
   Changed();
   return true;
 }

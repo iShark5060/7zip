@@ -12,6 +12,7 @@
 #include "../Common/ZipRegistry.h"
 
 #include "../FileManager/DialogSize.h"
+#include "../FileManager/Z7DarkMode.h"
 
 #include "CompressDialogRes.h"
 
@@ -27,7 +28,7 @@ namespace NCompressDialog
       kSync
     };
   }
-  
+
   struct CInfo
   {
     NUpdateMode::EEnum UpdateMode;
@@ -55,7 +56,7 @@ namespace NCompressDialog
     bool SFXMode;
     bool OpenShareForWrite;
     bool DeleteAfterCompressing;
-    
+
     CBoolPair SymLinks;
     CBoolPair HardLinks;
     CBoolPair AltStreams;
@@ -68,9 +69,9 @@ namespace NCompressDialog
     CBoolPair CTime;
     CBoolPair ATime;
     CBoolPair SetArcMTime;
-    
+
     UString ArcPath; // in: Relative or abs ; out: Relative or abs
-    
+
     // FString CurrentDirPrefix;
     bool KeepName;
 
@@ -111,7 +112,7 @@ struct CBool1
   bool Supported;
 
   CBool1(): Val(false), Supported(false) {}
-  
+
   void Init()
   {
     Val = false;
@@ -170,7 +171,7 @@ private:
 
   NWindows::NControl::CComboBox m_UpdateMode;
   NWindows::NControl::CComboBox m_PathMode;
-  
+
   NWindows::NControl::CEdit _password1Control;
   NWindows::NControl::CEdit _password2Control;
   NWindows::NControl::CComboBox _encryptionMethod;
@@ -203,12 +204,12 @@ public:
   {
     return (*ArcFormats)[GetFormatIndex()];
   }
-  
+
   NCompression::CFormatOptions &Get_FormatOptions();
 
   void CheckSFXNameChange();
   void SetArchiveName2(bool prevWasSFX);
-  
+
   unsigned GetStaticFormatIndex();
 
   void SetNearestSelectComboBox(NWindows::NControl::CComboBox &comboBox, UInt32 value);
@@ -220,7 +221,7 @@ public:
     EnableMultiCombo(IDC_COMPRESS_LEVEL);
     SetMethod();
   }
-  
+
   void SetMethod2(int keepMethodId);
   void SetMethod(int keepMethodId = -1)
   {
@@ -236,10 +237,10 @@ public:
     SetOrder2();
     EnableMultiCombo(IDC_COMPRESS_ORDER);
   }
-  
+
   int GetMethodID_RAW();
   int GetMethodID();
-  
+
   UString GetMethodSpec(UString &estimatedName);
   UString GetMethodSpec();
   bool IsMethodEqualTo(const UString &s);
@@ -253,7 +254,7 @@ public:
   int AddDict2(size_t sizeReal, size_t sizeShow);
   int AddDict(size_t size);
   // int AddDict_Chain(size_t size);
- 
+
   void SetDictionary2();
 
   UInt32 GetComboValue(NWindows::NControl::CComboBox &c, int defMax = 0);
@@ -262,10 +263,10 @@ public:
   UInt32 GetLevel()  { return GetComboValue(m_Level); }
   UInt32 GetLevelSpec()  { return GetComboValue(m_Level, 1); }
   UInt32 GetLevel2();
-  
+
   UInt64 GetDictSpec() { return GetComboValue_64(m_Dictionary, 1); }
   // UInt64 GetDictChainSpec() { return GetComboValue_64(m_Dictionary_Chain, 1); }
-  
+
   UInt64 GetDict2()
   {
     UInt64 num = GetDictSpec();
@@ -281,7 +282,7 @@ public:
   // UInt32 GetOrder() { return GetComboValue(m_Order); }
   UInt32 GetOrderSpec() { return GetComboValue(m_Order, 1); }
   UInt32 GetNumThreadsSpec() { return GetComboValue(m_NumThreads, 1); }
-  
+
   UInt32 GetNumThreads2()
   {
     UInt32 num = GetNumThreadsSpec();
@@ -364,7 +365,7 @@ public:
 
   void MessageBoxError(LPCWSTR message)
   {
-    MessageBoxW(*this, message, L"7-Zip", MB_ICONERROR);
+    Z7_MessageBoxW(*this, message, L"7-Zip", MB_ICONERROR);
   }
 
   void ShowOptionsString();
@@ -373,7 +374,7 @@ public:
   const CObjectVector<CArcInfoEx> *ArcFormats;
   CUIntVector ArcIndices; // can not be empty, must contain Info.FormatIndex, if Info.FormatIndex >= 0
   AStringVector ExternalMethods;
-  
+
   void SetMethods(const CObjectVector<CCodecInfoUser> &userCodecs);
 
   NCompressDialog::CInfo Info;
@@ -398,7 +399,7 @@ class COptionsDialog: public NWindows::NControl::CModalDialog
     bool IsSupported;
     bool DefaultVal;
     CBoolPair BoolPair;
-    
+
     unsigned Id;
     unsigned Set_Id;
 

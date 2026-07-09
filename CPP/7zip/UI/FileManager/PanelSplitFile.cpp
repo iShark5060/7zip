@@ -15,6 +15,7 @@
 #include "CopyDialog.h"
 #include "FormatUtils.h"
 #include "LangUtils.h"
+#include "Z7DarkMode.h"
 #include "SplitDialog.h"
 #include "SplitUtils.h"
 
@@ -94,9 +95,9 @@ class CPreAllocOutFile
 public:
   NIO::COutFile File;
   UInt64 Written;
-  
+
   CPreAllocOutFile(): _preAllocSize(0), Written(0) {}
-  
+
   ~CPreAllocOutFile()
   {
     SetCorrectFileLength();
@@ -145,21 +146,21 @@ HRESULT CThreadSplit::ProcessVirt()
     return GetLastError_noZero_HRESULT();
 
   CPreAllocOutFile outFile;
-  
+
   CMyBuffer buffer;
   if (!buffer.Allocate(kBufSize))
     return E_OUTOFMEMORY;
-  
+
   CVolSeqName seqName;
   seqName.SetNumDigits(NumVolumes);
-  
+
   UInt64 length;
   if (!inFile.GetLength(length))
     return GetLastError_noZero_HRESULT();
-  
+
   CProgressSync &sync = Sync;
   sync.Set_NumBytesTotal(length);
-  
+
   UInt64 pos = 0;
   UInt64 prev = 0;
   UInt64 numFiles = 0;
@@ -172,7 +173,7 @@ HRESULT CThreadSplit::ProcessVirt()
       volSize = VolumeSizes[volIndex];
     else
       volSize = VolumeSizes.Back();
-    
+
     UInt32 needSize = kBufSize;
     {
       const UInt64 rem = volSize - outFile.Written;
@@ -185,7 +186,7 @@ HRESULT CThreadSplit::ProcessVirt()
     if (processedSize == 0)
       return S_OK;
     needSize = processedSize;
-  
+
     if (outFile.Written == 0)
     {
       FString name = VolBasePath;
@@ -207,14 +208,14 @@ HRESULT CThreadSplit::ProcessVirt()
       }
       outFile.PreAlloc(expectSize);
     }
-    
+
     if (!outFile.Write(buffer, needSize, processedSize))
       return GetLastError_noZero_HRESULT();
     if (needSize != processedSize)
       throw g_Message_FileWriteError;
-    
+
     pos += processedSize;
-    
+
     if (outFile.Written == volSize)
     {
       outFile.Close();
@@ -287,7 +288,7 @@ void CApp::Split()
   {
     wchar_t s[32];
     ConvertUInt64ToString(numVolumes, s);
-    if (::MessageBoxW(srcPanel, MyFormatNew(IDS_SPLIT_CONFIRM_MESSAGE, s),
+    if (Z7_MessageBoxW(srcPanel, MyFormatNew(IDS_SPLIT_CONFIRM_MESSAGE, s),
         LangString(IDS_SPLIT_CONFIRM_TITLE),
         MB_YESNOCANCEL | MB_ICONQUESTION) != IDYES)
       return;
@@ -323,7 +324,7 @@ void CApp::Split()
   spliter.FilePath = us2fs(srcPath + itemName);
   spliter.VolBasePath = us2fs(path + srcPanel.GetItemName_for_Copy(index));
   spliter.VolumeSizes = splitDialog.VolumeSizes;
-  
+
   // if (splitDialog.VolumeSizes.Size() == 0) return;
 
   // CPanel::CDisableTimerProcessing disableTimerProcessing1(srcPanel);
@@ -361,10 +362,10 @@ HRESULT CThreadCombine::ProcessVirt()
     AddErrorPath(OutputPath);
     return res;
   }
-  
+
   CProgressSync &sync = Sync;
   sync.Set_NumBytesTotal(TotalSize);
-  
+
   CMyBuffer bufferObject;
   if (!bufferObject.Allocate(kBufSize))
     return E_OUTOFMEMORY;
@@ -451,10 +452,10 @@ void CApp::Combine()
     srcPanel.MessageBox_Error_LangID(IDS_COMBINE_CANT_DETECT_SPLIT_FILE);
     return;
   }
-  
+
   {
   CThreadCombine combiner;
-  
+
   UString nextName = itemName;
   combiner.TotalSize = 0;
   for (;;)
@@ -471,19 +472,19 @@ void CApp::Combine()
     srcPanel.MessageBox_Error_LangID(IDS_COMBINE_CANT_FIND_MORE_THAN_ONE_PART);
     return;
   }
-  
+
   if (combiner.TotalSize == 0)
   {
     srcPanel.MessageBox_Error(L"No data");
     return;
   }
-  
+
   UString info;
   AddValuePair2(info, IDS_PROP_FILES, combiner.Names.Size(), combiner.TotalSize);
-  
+
   info.Add_LF();
   info += srcPath;
-  
+
   unsigned i;
   for (i = 0; i < combiner.Names.Size() && i < 2; i++)
     AddInfoFileName(info, fs2us(combiner.Names[i]));
@@ -493,7 +494,7 @@ void CApp::Combine()
       AddInfoFileName(info, L"...");
     AddInfoFileName(info, fs2us(combiner.Names.Back()));
   }
-  
+
   {
     CCopyDialog copyDialog;
     copyDialog.Value = path;
@@ -514,7 +515,7 @@ void CApp::Combine()
     srcPanel.MessageBox_Error_2Lines_Message_HRESULT(MyFormatNew(IDS_CANNOT_CREATE_FOLDER, path), lastError);
     return;
   }
-  
+
   UString outName = volSeqName.UnchangedPart;
   while (!outName.IsEmpty())
   {
@@ -524,7 +525,7 @@ void CApp::Combine()
   }
   if (outName.IsEmpty())
     outName = "file";
-  
+
   NFind::CFileInfo fileInfo;
   UString destFilePath = path + outName;
   combiner.OutputPath = us2fs(destFilePath);
@@ -533,23 +534,23 @@ void CApp::Combine()
     srcPanel.MessageBox_Error(MyFormatNew(IDS_FILE_EXIST, destFilePath));
     return;
   }
-  
+
     CProgressDialog &progressDialog = combiner;
     progressDialog.ShowCompressionInfo = false;
-  
+
     const UString progressWindowTitle ("7-Zip"); // LangString(IDS_APP_TITLE, 0x03000000);
     const UString title = LangString(IDS_COMBINING);
-    
+
     progressDialog.MainWindow = _window;
     progressDialog.MainTitle = progressWindowTitle;
     progressDialog.MainAddTitle = title;
     progressDialog.MainAddTitle.Add_Space();
-    
+
     combiner.InputDirPrefix = us2fs(srcPath);
-    
+
     // CPanel::CDisableTimerProcessing disableTimerProcessing1(srcPanel);
     // CPanel::CDisableTimerProcessing disableTimerProcessing2(destPanel);
-    
+
     if (combiner.Create(title, _window) != 0)
       return;
   }

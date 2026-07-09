@@ -19,6 +19,7 @@
 #include "DialogSize.h"
 #include "ProgressDialog2.h"
 #include "ProgressDialog2Res.h"
+#include "Z7DarkMode.h"
 
 using namespace NWindows;
 
@@ -353,7 +354,7 @@ bool CProgressDialog::OnInit()
 
   INIT_AS_UNDEFINED(_prevSpeed)
   _prevSpeed_MoveBits = 0;
-  
+
   _prevTime = ::GetTickCount();
   _elapsedTime = 0;
 
@@ -361,7 +362,7 @@ bool CProgressDialog::OnInit()
   INIT_AS_UNDEFINED(_processed_Prev)
   INIT_AS_UNDEFINED(_packed_Prev)
   INIT_AS_UNDEFINED(_ratio_Prev)
-  
+
   _filesStr_Prev.Empty();
   _filesTotStr_Prev.Empty();
 
@@ -438,7 +439,7 @@ static const UINT kIDs[] =
   IDT_PROGRESS_FILES,     IDT_PROGRESS_FILES_VAL,
   0,                      IDT_PROGRESS_FILES_TOTAL,
   IDT_PROGRESS_ERRORS,    IDT_PROGRESS_ERRORS_VAL,
-  
+
   IDT_PROGRESS_TOTAL,     IDT_PROGRESS_TOTAL_VAL,
   IDT_PROGRESS_SPEED,     IDT_PROGRESS_SPEED_VAL,
   IDT_PROGRESS_PROCESSED, IDT_PROGRESS_PROCESSED_VAL,
@@ -843,17 +844,17 @@ void CProgressDialog::UpdateStatInfo(bool showAll)
         needSetTitle = true;
       }
     }
-    
+
     {
       wchar_t s[64];
-      
+
       ConvertUInt64ToString(completedFiles, s);
       if (_filesStr_Prev != s)
       {
         _filesStr_Prev = s;
         SetItemText(IDT_PROGRESS_FILES_VAL, s);
       }
-      
+
       s[0] = 0;
       if (IS_DEFINED_VAL(totalFiles))
       {
@@ -866,7 +867,7 @@ void CProgressDialog::UpdateStatInfo(bool showAll)
         SetItemText(IDT_PROGRESS_FILES_TOTAL, s);
       }
     }
-    
+
     const UInt64 packSize   = CompressingMode ? outSize : inSize;
     const UInt64 unpackSize = CompressingMode ? inSize : outSize;
 
@@ -880,7 +881,7 @@ void CProgressDialog::UpdateStatInfo(bool showAll)
     {
       ShowSize(IDT_PROGRESS_PROCESSED_VAL, unpackSize, _processed_Prev);
       ShowSize(IDT_PROGRESS_PACKED_VAL, packSize, _packed_Prev);
-      
+
       if (IS_DEFINED_VAL(packSize) &&
           IS_DEFINED_VAL(unpackSize) &&
           unpackSize != 0)
@@ -967,7 +968,7 @@ INT_PTR CProgressDialog::Create(const UString &title, NWindows::CThread &thread,
     {
       CWaitCursor waitCursor;
       HANDLE h[] = { thread, _createDialogEvent };
-      
+
       const DWORD res2 = WaitForMultipleObjects(Z7_ARRAY_SIZE(h), h, FALSE, kCreateDelay);
       if (res2 == WAIT_OBJECT_0 && !Sync.ThereIsMessage())
         return 0;
@@ -984,7 +985,7 @@ INT_PTR CProgressDialog::Create(const UString &title, NWindows::CThread &thread,
   thread.Wait_Close();
   if (!MessagesDisplayed)
   if (!g_DisableUserQuestions)
-    MessageBoxW(wndParent, L"Progress Error", L"7-Zip", MB_ICONERROR);
+    Z7_MessageBoxW(wndParent, L"Progress Error", L"7-Zip", MB_ICONERROR);
   return res;
 }
 
@@ -998,7 +999,7 @@ bool CProgressDialog::OnExternalCloseMessage()
   // SetText(L"Finished2 ");
 
   UpdateStatInfo(true);
-  
+
   SetItemText(IDCANCEL, LangString(IDS_CLOSE));
   ::SendMessage(GetItem(IDCANCEL), BM_SETSTYLE, BS_DEFPUSHBUTTON, MAKELPARAM(TRUE, 0));
   HideItem(IDB_PROGRESS_BACKGROUND);
@@ -1020,7 +1021,7 @@ bool CProgressDialog::OnExternalCloseMessage()
     if (fm.ErrorMessage.Title.IsEmpty())
       fm.ErrorMessage.Title = "7-Zip";
     if (!g_DisableUserQuestions)
-      MessageBoxW(*this, fm.ErrorMessage.Message, fm.ErrorMessage.Title, MB_ICONERROR);
+      Z7_MessageBoxW(*this, fm.ErrorMessage.Message, fm.ErrorMessage.Title, MB_ICONERROR);
   }
   else if (!thereAreMessages)
   {
@@ -1031,7 +1032,7 @@ bool CProgressDialog::OnExternalCloseMessage()
       if (fm.OkMessage.Title.IsEmpty())
         fm.OkMessage.Title = "7-Zip";
       if (!g_DisableUserQuestions)
-        MessageBoxW(*this, fm.OkMessage.Message, fm.OkMessage.Title, MB_OK);
+        Z7_MessageBoxW(*this, fm.OkMessage.Message, fm.OkMessage.Title, MB_OK);
     }
   }
 
@@ -1244,23 +1245,23 @@ bool CProgressDialog::OnButtonClicked(unsigned buttonID, HWND buttonHWND)
         End(IDCLOSE);
         break;
       }
-      
+
       if (_cancelWasPressed)
         return true;
-        
+
       const bool paused = Sync.Get_Paused();
-      
+
       if (!paused)
       {
         OnPauseButton();
       }
 
       _inCancelMessageBox = true;
-      const int res = ::MessageBoxW(*this, LangString(IDS_PROGRESS_ASK_CANCEL), _title, MB_YESNOCANCEL);
+      const int res = Z7_MessageBoxW(*this, LangString(IDS_PROGRESS_ASK_CANCEL), _title, MB_YESNOCANCEL);
       _inCancelMessageBox = false;
       if (res == IDYES)
         _cancelWasPressed = true;
-      
+
       if (!paused)
       {
         OnPauseButton();
@@ -1307,7 +1308,7 @@ void CProgressDialog::ProcessWasFinished()
   // Set Window title here.
   if (!WaitMode)
     WaitCreating();
-  
+
   if (_wasCreated)
     PostMsg(kCloseMessage);
   else
@@ -1374,7 +1375,7 @@ void CProgressDialog::CopyToClipboard()
   unsigned numIndexes = indexes.Size();
   if (numIndexes == 0)
     numIndexes = (unsigned)_messageList.GetItemCount();
-  
+
   for (unsigned i = 0; i < numIndexes; i++)
   {
     const unsigned index = (i < indexes.Size() ? indexes[i] : i);
@@ -1391,7 +1392,7 @@ void CProgressDialog::CopyToClipboard()
         ;
     }
   }
-  
+
   ClipboardSetText(*this, s);
 }
 

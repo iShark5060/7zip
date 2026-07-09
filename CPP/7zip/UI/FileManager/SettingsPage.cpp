@@ -20,6 +20,7 @@
 
 #include "HelpUtils.h"
 #include "LangUtils.h"
+#include "Z7DarkMode.h"
 #include "RegistryUtils.h"
 #include "SettingsPage.h"
 #include "SettingsPageRes.h"
@@ -139,7 +140,7 @@ bool CSettingsPage::OnInit()
   // CheckButton(IDX_SETTINGS_UNDERLINE, st.Underline);
 
   CheckButton(IDX_SETTINGS_SHOW_SYSTEM_MENU, st.ShowSystemMenu);
-  
+
   if (IsLargePageSupported())
     CheckButton(IDX_SETTINGS_LARGE_PAGES, ReadLockMemoryEnable());
   else
@@ -193,7 +194,7 @@ bool CSettingsPage::OnInit()
     }
   }
   */
-  
+
   // EnableSubItems();
 
 
@@ -225,7 +226,7 @@ bool CSettingsPage::OnInit()
       else
         valMax = 1;
     }
-    
+
     UInt32 limit = NExtract::Read_LimitGB();
     if (limit != 0 && limit != (UInt32)(Int32)-1)
       CheckButton(IDX_SETTINGS_MEM_SET, true);
@@ -281,7 +282,7 @@ LONG CSettingsPage::OnApply()
     st.SingleClick = IsButtonCheckedBool(IDX_SETTINGS_SINGLE_CLICK);
     st.AlternativeSelection = IsButtonCheckedBool(IDX_SETTINGS_ALTERNATIVE_SELECTION);
     // st.Underline = IsButtonCheckedBool(IDX_SETTINGS_UNDERLINE);
-    
+
     st.ShowSystemMenu = IsButtonCheckedBool(IDX_SETTINGS_SHOW_SYSTEM_MENU);
 
     st.Save();
@@ -328,7 +329,7 @@ LONG CSettingsPage::OnApply()
     const UString str = _memLimitStrings[index];
 
     bool needSave = true;
-    
+
     NCompression::CMemUse mu;
 
     if (_ramSize_Defined)
@@ -342,29 +343,29 @@ LONG CSettingsPage::OnApply()
         if (s2.IsEmpty())
           GetItemText(IDT_COMPRESS_MEMORY, s2);
         UString s;
-        
+
         s += "The selected value is not safe for system performance.";
         s.Add_LF();
         s += "The memory consumption for compression operation will exceed RAM size.";
         s.Add_LF();
         s.Add_LF();
         AddSize_MB(s, usage64);
-        
+
         if (!s2.IsEmpty())
         {
           s += " : ";
           s += s2;
         }
-        
+
         s.Add_LF();
         AddSize_MB(s, _ramSize);
         s += " : RAM";
-        
+
         s.Add_LF();
         s.Add_LF();
         s += "Are you sure you want set that unsafe value for memory usage?";
-        
-        int res = MessageBoxW(*this, s, L"7-Zip", MB_YESNOCANCEL | MB_ICONQUESTION);
+
+        int res = Z7_MessageBoxW(*this, s, L"7-Zip", MB_YESNOCANCEL | MB_ICONQUESTION);
         if (res != IDYES)
           needSave = false;
       }
@@ -379,7 +380,7 @@ LONG CSettingsPage::OnApply()
       return PSNRET_INVALID_NOCHANGEPAGE;
   }
   */
-    
+
   return PSNRET_NOERROR;
 }
 

@@ -13,6 +13,7 @@
 
 #include "HelpUtils.h"
 #include "LangUtils.h"
+#include "Z7DarkMode.h"
 
 #ifdef Z7_LANG
 static const UInt32 kLangIDs[] =
@@ -37,7 +38,7 @@ bool CAboutDialog::OnInit()
     UString s;
     g_CodecsObj->GetCodecsErrorMessage(s);
     if (!s.IsEmpty())
-      MessageBoxW(GetParent(), s, L"7-Zip", MB_ICONERROR);
+      Z7_MessageBoxW(GetParent(), s, L"7-Zip", MB_ICONERROR);
   }
   #endif
 
@@ -47,7 +48,7 @@ bool CAboutDialog::OnInit()
   #endif
   SetItemText(IDT_ABOUT_VERSION, UString("7-Zip " MY_VERSION_CPU));
   SetItemText(IDT_ABOUT_DATE, LLL(MY_DATE));
-  
+
   NormalizePosition();
   return CModalDialog::OnInit();
 }

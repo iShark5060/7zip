@@ -9,6 +9,7 @@
 #include "../../UI/Common/EnumDirItems.h"
 
 #include "../../UI/FileManager/LangUtils.h"
+#include "../../UI/FileManager/Z7DarkMode.h"
 
 #include "../../UI/GUI/BenchmarkDialog.h"
 #include "../../UI/GUI/ExtractGUI.h"
@@ -63,7 +64,7 @@ static void ThrowException_if_Error(HRESULT res)
 
 
 
- 
+
 UString GetQuotedString(const UString &s)
 {
   UString s2 ('\"');
@@ -74,7 +75,7 @@ UString GetQuotedString(const UString &s)
 
 static void ErrorMessage(LPCWSTR message)
 {
-  MessageBoxW(g_HWND, message, L"7-Zip", MB_ICONERROR);
+  Z7_MessageBoxW(g_HWND, message, L"7-Zip", MB_ICONERROR);
 }
 
 static void ErrorMessageHRESULT(HRESULT res)
@@ -96,11 +97,11 @@ HRESULT CompressFiles(
     bool email, bool showDialog, bool /* waitFinish */)
 {
   MY_TRY_BEGIN
-  
+
   CREATE_CODECS
 
   CUpdateCallbackGUI callback;
-  
+
   callback.Init();
 
   CUpdateOptions uo;
@@ -134,7 +135,7 @@ HRESULT CompressFiles(
   result = UpdateGUI(codecs,
       formatIndices, arcPath,
       censor, uo, showDialog, messageWasDisplayed, &callback, g_HWND);
-  
+
   if (result != S_OK)
   {
     if (result != E_ABORT && messageWasDisplayed)
@@ -147,7 +148,7 @@ HRESULT CompressFiles(
       throw CSystemException(E_FAIL);
     return E_FAIL;
   }
-  
+
   MY_TRY_FINISH
   return S_OK;
 }
@@ -157,16 +158,16 @@ static HRESULT ExtractGroupCommand(const UStringVector &arcPaths,
     bool showDialog, CExtractOptions &eo, const char *kType = NULL)
 {
   MY_TRY_BEGIN
-  
+
   CREATE_CODECS
 
   CExtractCallbackImp *ecs = new CExtractCallbackImp;
   CMyComPtr<IFolderArchiveExtractCallback> extractCallback = ecs;
-  
+
   ecs->Init();
-  
+
   // eo.CalcCrc = options.CalcCrc;
-  
+
   UStringVector arcPathsSorted;
   UStringVector arcFullPathsSorted;
   {
@@ -183,7 +184,7 @@ static HRESULT ExtractGroupCommand(const UStringVector &arcPaths,
         NULL // &scan: change it!!!!
         );
   }
-  
+
   CObjectVector<COpenType> formatIndices;
   if (kType)
   {
@@ -194,12 +195,12 @@ static HRESULT ExtractGroupCommand(const UStringVector &arcPaths,
       // return E_INVALIDARG;
     }
   }
-  
+
   NWildcard::CCensor censor;
   {
     censor.AddPreItem_Wildcard();
   }
-  
+
   censor.AddPathsToCensor(NWildcard::k_RelatPath);
 
   bool messageWasDisplayed = false;
@@ -218,7 +219,7 @@ static HRESULT ExtractGroupCommand(const UStringVector &arcPaths,
     throw CSystemException(result);
   }
   return ecs->IsOK() ? S_OK : E_FAIL;
-  
+
   MY_TRY_FINISH
   return result;
 }
@@ -268,7 +269,7 @@ void CalcChecksum(const UStringVector &paths,
       );
     return;
   }
-  
+
   CREATE_CODECS
   LOAD_EXTERNAL_CODECS
 
@@ -296,7 +297,7 @@ void CalcChecksum(const UStringVector &paths,
       return; //  E_FAIL;
     throw CSystemException(result);
   }
-  
+
   MY_TRY_FINISH
   return; //  result;
 }
@@ -304,10 +305,10 @@ void CalcChecksum(const UStringVector &paths,
 void Benchmark(bool totalMode)
 {
   MY_TRY_BEGIN
-  
+
   CREATE_CODECS
   LOAD_EXTERNAL_CODECS
-  
+
   CObjectVector<CProperty> props;
   if (totalMode)
   {
@@ -321,7 +322,7 @@ void Benchmark(bool totalMode)
       props,
       k_NumBenchIterations_Default,
       g_HWND);
-  
+
   MY_TRY_FINISH
 }
 

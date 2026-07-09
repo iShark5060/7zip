@@ -1,5 +1,5 @@
 // BrowseDialog.cpp
- 
+
 #include "StdAfx.h"
 
 #include "../../../Common/MyWindows.h"
@@ -47,6 +47,7 @@
 
 #include "ComboDialog.h"
 #include "LangUtils.h"
+#include "Z7DarkMode.h"
 
 #include "resource.h"
 
@@ -57,7 +58,7 @@ using namespace NFind;
 
 static void MessageBox_Error_Global(HWND wnd, const wchar_t *message)
 {
-  ::MessageBoxW(wnd, message, L"7-Zip", MB_ICONERROR);
+  Z7_MessageBoxW(wnd, message, L"7-Zip", MB_ICONERROR);
 }
 
 #ifdef USE_MY_BROWSE_DIALOG
@@ -116,7 +117,7 @@ class CBrowseDialog: public NControl::CModalDialog
   // Reload changes DirPrefix. Don't send DirPrefix in pathPrefix parameter
   HRESULT Reload(const UString &pathPrefix, const UString &selectedName);
   HRESULT Reload();
-  
+
   void OpenParentFolder();
   void SetPathEditText();
   void OnCreateDir();
@@ -203,7 +204,7 @@ bool CBrowseDialog::OnInit()
       else
         EnableItem(IDC_BROWSE_FILTER, false);
     }
-    
+
     if (/* FilterIndex >= 0 && */ (unsigned)FilterIndex < Filters.Size())
       _filterCombo.SetCurSel(FilterIndex);
   }
@@ -532,7 +533,7 @@ int CBrowseDialog::CompareItems(LPARAM lParam1, LPARAM lParam2) const
     if (!isDir2) return -1;
   }
   else if (isDir2) return 1;
-  
+
   int res = 0;
   switch (_sortIndex)
   {
@@ -571,7 +572,7 @@ wchar_t *Browse_ConvertSizeToString(UInt64 v, wchar_t *s)
 HRESULT CBrowseDialog::Reload(const UString &pathPrefix, const UString &selectedName)
 {
   CObjectVector<CFileInfo> files;
-  
+
   #ifndef UNDER_CE
   bool isDrive = false;
   if (pathPrefix.IsEmpty() || pathPrefix.IsEqualTo(kSuperPathPrefix))
@@ -978,7 +979,7 @@ bool CBrowseInfo::BrowseForFile(const CObjectVector<CBrowseFilterInfo> &filters)
   }
 
 #endif // UNDER_CE
-  
+
 #ifdef USE_MY_BROWSE_DIALOG
 
   CBrowseDialog dialog;
@@ -1025,7 +1026,7 @@ bool CorrectFsPath(const UString &relBase, const UString &path2, UString &result
   #endif
   unsigned start = 0;
   UString base;
-  
+
   if (IsAbsolutePath(path))
   {
     #if defined(_WIN32) && !defined(UNDER_CE)
@@ -1104,7 +1105,7 @@ bool CorrectFsPath(const UString &relBase, const UString &path2, UString &result
     start = (unsigned)(slashPos + 1);
     result.Add_PathSepar();
   }
-  
+
   return true;
 }
 

@@ -23,6 +23,7 @@
 #include "../FileManager/DialogSize.h"
 #include "../FileManager/HelpUtils.h"
 #include "../FileManager/LangUtils.h"
+#include "../FileManager/Z7DarkMode.h"
 #include "../FileManager/resourceGui.h"
 
 #include "../../MyVersion.h"
@@ -93,7 +94,7 @@ struct CTotalBenchRes2: public CTotalBenchRes
   }
 };
 
-  
+
 struct CSyncData
 {
   UInt32 NumPasses_Finished;
@@ -129,22 +130,22 @@ struct CSyncData
 void CSyncData::Init()
 {
   NumPasses_Finished = 0;
-  
+
   // NumEncProgress = 0;
   // NumDecProgress = 0;
-  
+
   Enc_BenchRes.Init();
   Enc_BenchRes_1.Init();
   Dec_BenchRes.Init();
   Dec_BenchRes_1.Init();
-  
+
   #ifdef PRINT_ITER_TIME
   TotalTicks = 0;
   #endif
-  
+
   RatingVector_DeletedIndex = -1;
   // RatingVector_NumDeleted = 0;
-  
+
   BenchWasFinished =
     NeedPrint_Freq =
     NeedPrint_RatingVector =
@@ -190,7 +191,7 @@ struct CBenchProgressSync
   }
 
   void Init();
-  
+
   void SendExit()
   {
     NWindows::NSynchronization::CCriticalSectionLock lock(CS);
@@ -202,17 +203,17 @@ struct CBenchProgressSync
 void CBenchProgressSync::Init()
 {
   Exit = false;
-  
+
   BenchFinish_Task_HRESULT = S_OK;
   BenchFinish_Thread_HRESULT = S_OK;
-  
+
   sd.Init();
   RatingVector.Clear();
-  
+
   NumFreqThreadsPrev = 0;
   FreqString_Sync.Empty();
   FreqString_GUI.Empty();
-  
+
   Text.Empty();
   TextWasChanged = true;
 }
@@ -257,7 +258,7 @@ class CBenchmarkDialog:
   public NWindows::NControl::CModalDialog
 {
   bool _finishTime_WasSet;
-  
+
   bool WasStopped_in_GUI;
   bool ExitWasAsked_in_GUI;
   bool NeedRestart;
@@ -367,7 +368,7 @@ public:
   }
   void MessageBoxError(LPCWSTR message)
   {
-    MessageBoxW(*this, message, L"7-Zip", MB_ICONERROR);
+    Z7_MessageBoxW(*this, message, L"7-Zip", MB_ICONERROR);
   }
   void MessageBoxError_Status(LPCWSTR message)
   {
@@ -493,7 +494,7 @@ bool CBenchmarkDialog::OnInit()
     s.Add_UInt32(numCPUs);
     s += GetProcessThreadsInfo(threadsInfo);
     SetItemTextA(IDT_BENCH_HARDWARE_THREADS, s);
-  
+
     {
       AString s2;
       GetSysInfo(s, s2);
@@ -552,11 +553,11 @@ bool CBenchmarkDialog::OnInit()
   // ----- Dictionary ----------
 
   m_Dictionary.Attach(GetItem(IDC_BENCH_DICTIONARY));
-  
+
   RamSize = (UInt64)(sizeof(size_t)) << 29;
   RamSize_Defined = NSystem::GetRamSize(RamSize);
 
-  
+
   #ifdef UNDER_CE
   const UInt32 kNormalizedCeSize = (16 << 20);
   if (RamSize > kNormalizedCeSize && RamSize < (33 << 20))
@@ -577,7 +578,7 @@ bool CBenchmarkDialog::OnInit()
         break;
     Sync.DictSize = (UInt64)1 << dicSizeLog;
   }
-  
+
   if (Sync.DictSize < kMinDicSize) Sync.DictSize = kMinDicSize;
   if (Sync.DictSize > kMaxDicSize) Sync.DictSize = kMaxDicSize;
 
@@ -667,9 +668,9 @@ bool CBenchmarkDialog::OnSize(WPARAM /* wParam */, int xSize, int ySize)
   {
     int y = ySize - my - by;
     int x = xSize - mx - bx1;
-    
+
     InvalidateRect(NULL);
-    
+
     MoveItem(IDCANCEL, x, y, bx1, by);
     MoveItem(IDHELP, x - mx - bx2, y, bx2, by);
   }
@@ -780,7 +781,7 @@ static const UInt32 g_IDs[] =
   IDT_BENCH_COMPRESS_RATING2,
   IDT_BENCH_COMPRESS_RPU1,
   IDT_BENCH_COMPRESS_RPU2,
-  
+
   IDT_BENCH_DECOMPR_SIZE1,
   IDT_BENCH_DECOMPR_SIZE2,
   IDT_BENCH_DECOMPR_SPEED1,
@@ -791,12 +792,12 @@ static const UInt32 g_IDs[] =
   IDT_BENCH_DECOMPR_USAGE2,
   IDT_BENCH_DECOMPR_RPU1,
   IDT_BENCH_DECOMPR_RPU2,
-  
+
   IDT_BENCH_TOTAL_USAGE_VAL,
   IDT_BENCH_TOTAL_RATING_VAL,
   IDT_BENCH_TOTAL_RPU_VAL
 };
-  
+
 
 static const unsigned k_Ids_Enc_1[] = {
   IDT_BENCH_COMPRESS_USAGE1,
@@ -860,7 +861,7 @@ void CBenchmarkDialog::StartBenchmark()
   WasStopped_in_GUI = false;
 
   SetItemText_Empty(IDT_BENCH_ERROR_MESSAGE);
-  
+
   MyKillTimer(); // optional code. timer was killed before
 
   const size_t dict = OnChangeDictionary();
@@ -873,7 +874,7 @@ void CBenchmarkDialog::StartBenchmark()
   SetItemText_Empty(IDT_BENCH_LOG);
   SetItemText_Empty(IDT_BENCH_ELAPSED_VAL);
   SetItemText_Empty(IDT_BENCH_ERROR_MESSAGE);
-  
+
   const UInt64 memUsage = GetBenchMemoryUsage(numThreads, Sync.Level, dict,
       false); // totalBench
   if (!IsMemoryUsageOK(memUsage))
@@ -965,7 +966,7 @@ void CBenchmarkDialog::OnStopButton()
 void CBenchmarkDialog::OnCancel()
 {
   ExitWasAsked_in_GUI = true;
-  
+
   /*
   SendMsg_NextDlgCtl_Prev();
   EnableItem(IDCANCEL, false);
@@ -1099,16 +1100,16 @@ static void AddRatingsLine(UString &s, const CTotalBenchRes &enc, const CTotalBe
   AddRatingString(s, enc);
   s += "  ";
   AddRatingString(s, dec);
-  
+
   CTotalBenchRes tot_BenchRes;
   tot_BenchRes.SetSum(enc, dec);
-  
+
   s += "  ";
   AddRatingString(s, tot_BenchRes);
-  
+
   s.Add_Space();  AddUsageString(s, tot_BenchRes);
 
-  
+
   #ifdef PRINT_ITER_TIME
   s.Add_Space();
   {
@@ -1205,7 +1206,7 @@ bool CBenchmarkDialog::OnMessage(UINT message, WPARAM wParam, LPARAM lParam)
         CModalDialog::OnCancel();
         return true;
       }
-    
+
       SetItemText_Empty(IDT_BENCH_ERROR_MESSAGE);
 
       res = Sync.BenchFinish_Task_HRESULT;
@@ -1255,7 +1256,7 @@ void CBenchmarkDialog::UpdateGui()
     bool wasChanged = false;
     {
       NWindows::NSynchronization::CCriticalSectionLock lock(Sync.CS);
-      
+
       if (Sync.TextWasChanged)
       {
         wasChanged = true;
@@ -1278,7 +1279,7 @@ void CBenchmarkDialog::UpdateGui()
 
     if (sd.NeedPrint_RatingVector)
       RatingVector = Sync.RatingVector;
-    
+
     if (sd.NeedPrint_Freq)
     {
       Sync.FreqString_GUI = Sync.FreqString_Sync;
@@ -1304,7 +1305,7 @@ void CBenchmarkDialog::UpdateGui()
   if (sd.NeedPrint_Enc)   PrintBenchRes(sd.Enc_BenchRes,   k_Ids_Enc);
   if (sd.NeedPrint_Dec_1) PrintBenchRes(sd.Dec_BenchRes_1, k_Ids_Dec_1);
   if (sd.NeedPrint_Dec)   PrintBenchRes(sd.Dec_BenchRes,   k_Ids_Dec);
- 
+
   if (sd.BenchWasFinished && sd.NeedPrint_Tot)
   {
     CTotalBenchRes2 tot_BenchRes = sd.Enc_BenchRes;
@@ -1426,7 +1427,7 @@ struct CBenchCallback Z7_final: public IBenchCallback
   UInt64 dictionarySize;
   CBenchProgressSync *Sync;
   CBenchmarkDialog *BenchmarkDialog;
-  
+
   HRESULT SetEncodeResult(const CBenchInfo &info, bool final) Z7_override;
   HRESULT SetDecodeResult(const CBenchInfo &info, bool final) Z7_override;
 };
@@ -1602,7 +1603,7 @@ HRESULT CThreadBenchmark::Process()
   /* the first benchmark pass can be slow,
      if we run benchmark while the window is being created,
      and (no freq detecion loop) && (dictionary is small) (-mtic is small) */
-    
+
   // Sleep(300); // for debug
   #ifdef USE_DUMMY
   Dummy(1000 * 1000 * 1000); // for debug
@@ -1610,7 +1611,7 @@ HRESULT CThreadBenchmark::Process()
 
   CBenchProgressSync &sync = BenchmarkDialog->Sync;
   HRESULT finishHRESULT = S_OK;
-  
+
   try
   {
     for (UInt32 passIndex = 0;; passIndex++)
@@ -1631,22 +1632,22 @@ HRESULT CThreadBenchmark::Process()
       #ifdef PRINT_ITER_TIME
       const DWORD startTick = GetTickCount();
       #endif
-      
+
       CBenchCallback callback;
-      
+
       callback.dictionarySize = dictionarySize;
       callback.Sync = &sync;
       callback.BenchmarkDialog = BenchmarkDialog;
-      
+
       CBenchCallback2 callback2;
       callback2.TotalMode = BenchmarkDialog->TotalMode;
       callback2.Sync = &sync;
-      
+
       CFreqCallback freqCallback;
       freqCallback.BenchmarkDialog = BenchmarkDialog;
 
       HRESULT result;
-     
+
       try
       {
         CObjectVector<CProperty> props;
@@ -1673,13 +1674,13 @@ HRESULT CThreadBenchmark::Process()
             props.Add(prop);
           }
         }
-        
+
         result = Bench(EXTERNAL_CODECS_LOC_VARS
             BenchmarkDialog->TotalMode ? &callback2 : NULL,
             BenchmarkDialog->TotalMode ? NULL : &callback,
             props, 1, false,
             (!BenchmarkDialog->TotalMode) && passIndex == 0 ? &freqCallback: NULL);
-        
+
         // result = S_FALSE; // for debug;
         // throw 1;
       }
@@ -1730,7 +1731,7 @@ HRESULT CThreadBenchmark::Process()
             // pair.Dec_Defined = true;
           }
         }
-          
+
         sd.NeedPrint_Dec = true;
         sd.NeedPrint_Tot = true;
 

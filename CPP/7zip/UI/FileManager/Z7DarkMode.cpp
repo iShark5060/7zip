@@ -75,4 +75,11 @@ void Z7DarkMode_ApplyPropertySheet(HWND hWnd)
   DarkMode::setWindowEraseBgSubclass(hWnd);
 }
 
+int Z7_MessageBoxW(HWND hWnd, LPCWSTR text, LPCWSTR caption, UINT type)
+{
+  if (!DarkMode::isEnabled() || !DarkMode::isThemeDark())
+    return (int)::MessageBoxW(hWnd, text, caption, type);
+  return (int)DarkMode::darkMessageBoxW(hWnd, text, caption, type);
+}
+
 #endif

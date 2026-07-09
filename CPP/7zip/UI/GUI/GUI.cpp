@@ -28,9 +28,7 @@
 #include "../FileManager/StringUtils.h"
 #include "../FileManager/LangUtils.h"
 
-#if defined(Z7_WIN_DARKMODE_FM) && defined(_WIN32) && !defined(UNDER_CE)
 #include "../FileManager/Z7DarkMode.h"
-#endif
 
 #include "BenchmarkDialog.h"
 #include "ExtractGUI.h"
@@ -103,7 +101,7 @@ DECLARE_AND_SET_CLIENT_VERSION_VAR
 static void ErrorMessage(LPCWSTR message)
 {
   if (!g_DisableUserQuestions)
-    MessageBoxW(NULL, message, L"7-Zip", MB_ICONERROR | MB_OK);
+    Z7_MessageBoxW(NULL, message, L"7-Zip", MB_ICONERROR | MB_OK);
 }
 
 static void ErrorMessage(const char *s)
@@ -149,7 +147,7 @@ static int Main2()
   #endif
   if (commandStrings.Size() == 0)
   {
-    MessageBoxW(NULL, L"Specify command", L"7-Zip", 0);
+    Z7_MessageBoxW(NULL, L"Specify command", L"7-Zip", 0);
     return 0;
   }
 
@@ -166,7 +164,7 @@ static int Main2()
   codecs->CaseSensitive = options.CaseSensitive;
   ThrowException_if_Error(codecs->Load());
   Codecs_AddHashArcHandler(codecs);
- 
+
   #ifdef Z7_EXTERNAL_CODECS
   {
     g_ExternalCodecs_Ptr = &_externalCodecs;
@@ -175,17 +173,17 @@ static int Main2()
     if (!s.IsEmpty())
     {
       if (!g_DisableUserQuestions)
-        MessageBoxW(NULL, s, L"7-Zip", MB_ICONERROR);
+        Z7_MessageBoxW(NULL, s, L"7-Zip", MB_ICONERROR);
     }
-  
+
   }
   #endif
 
   const bool isExtractGroupCommand = options.Command.IsFromExtractGroup();
-  
+
   if (codecs->Formats.Size() == 0 &&
         (isExtractGroupCommand
-        
+
         || options.Command.IsFromUpdateGroup()))
   {
     #ifdef Z7_EXTERNAL_CODECS
@@ -198,7 +196,7 @@ static int Main2()
     #endif
     throw kNoFormats;
   }
-  
+
   CObjectVector<COpenType> formatIndices;
   if (!ParseOpenTypes(*codecs, options.ArcType, formatIndices))
   {
@@ -227,7 +225,7 @@ static int Main2()
       || options.Command.CommandType == NCommandType::kBenchmark)
     ThrowException_if_Error(_externalCodecs.Load());
   #endif
-  
+
   if (options.Command.CommandType == NCommandType::kBenchmark)
   {
     HRESULT res = Benchmark(
@@ -278,7 +276,7 @@ static int Main2()
     #ifndef Z7_SFX
     CHashBundle hb;
     CHashBundle *hb_ptr = NULL;
-    
+
     if (!options.HashMethods.IsEmpty())
     {
       hb_ptr = &hb;
@@ -424,7 +422,7 @@ int APIENTRY WinMain(HINSTANCE  hInstance, HINSTANCE /* hPrevInstance */,
   /* lpCmdLine */, int /* nCmdShow */)
 {
   g_hInstance = hInstance;
-  
+
   #ifdef _WIN32
   NT_CHECK
   #endif

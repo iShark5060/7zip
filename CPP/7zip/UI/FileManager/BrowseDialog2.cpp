@@ -1,5 +1,5 @@
 // BrowseDialog2.cpp
- 
+
 #include "StdAfx.h"
 
 #ifdef UNDER_CE
@@ -39,6 +39,7 @@
 #include "SysIconUtils.h"
 #include "FormatUtils.h"
 #include "LangUtils.h"
+#include "Z7DarkMode.h"
 
 #include "resource.h"
 #include "BrowseDialog2Res.h"
@@ -143,7 +144,7 @@ void CBrowseEnumerator::Enumerate(unsigned level)
           fi_SubFile = fi;
         bi.NumRootItems++;
       }
-      
+
       if (fi.IsDir())
       {
         bi.NumDirs++;
@@ -378,7 +379,7 @@ bool CBrowseDialog2::OnInit()
     UString s = LangString(IDS_PROP_SIZE);
     column.pszText = s.Ptr_non_const();
     _list.InsertColumn(columnIndex++, &column);
-    
+
     // if (TempMode)
     {
       _columnIndex_NumFiles = (int)columnIndex;
@@ -390,7 +391,7 @@ bool CBrowseDialog2::OnInit()
       s = LangString(IDS_PROP_FOLDERS);
       column.pszText = s.Ptr_non_const();
       _list.InsertColumn(columnIndex++, &column);
-      
+
       _columnIndex_fileNameInDir = (int)columnIndex;
       s = LangString(IDS_PROP_NAME);
       s += "-2";
@@ -822,7 +823,7 @@ static void PrintProps(UString &s, const CBrowseItem &bi,
     if (bi.WasInterrupted)
       s += "+";
   }
-  
+
   PrintProps_MTime(s, fi);
 
   if (fi2)
@@ -882,7 +883,7 @@ void CBrowseDialog2::Show_FileProps_Window(const CFileInfo &file)
 {
   UString s;
   PrintFileProps(s, file);
-  MessageBoxW(*this, s, LangString(IDS_PROPERTIES), MB_OK);
+  Z7_MessageBoxW(*this, s, LangString(IDS_PROPERTIES), MB_OK);
 }
 
 
@@ -946,7 +947,7 @@ void CBrowseDialog2::OnDelete(/* bool toRecycleBin */)
       s.Add_LF();
       s += s2;
     }
-    if (::MessageBoxW((HWND)*this, s, LangString(titleID),
+    if (Z7_MessageBoxW((HWND)*this, s, LangString(titleID),
         MB_YESNOCANCEL | MB_ICONQUESTION) != IDYES)
       return;
   }
@@ -1166,7 +1167,7 @@ bool CBrowseDialog2::OnContextMenu(HANDLE windowHandle, int xPos, int yPos)
     xPos = point.x;
     yPos = point.y;
   }
-    
+
   const UInt32 k_CmdId_Delete = 1;
   const UInt32 k_CmdId_Open_Explorer = 2;
   const UInt32 k_CmdId_Open_7zip = 3;
@@ -1176,7 +1177,7 @@ bool CBrowseDialog2::OnContextMenu(HANDLE windowHandle, int xPos, int yPos)
     CMenu menu;
     CMenuDestroyer menuDestroyer(menu);
     menu.CreatePopup();
-    
+
     unsigned numMenuItems = 0;
     // unsigned defaultCmd = 0;
 
@@ -1191,7 +1192,7 @@ bool CBrowseDialog2::OnContextMenu(HANDLE windowHandle, int xPos, int yPos)
       else if (indices.Size() > 1)
         break;
 
-     
+
       if (numMenuItems != 0)
       {
         if (cmd == k_CmdId_Open_Explorer)
@@ -1199,7 +1200,7 @@ bool CBrowseDialog2::OnContextMenu(HANDLE windowHandle, int xPos, int yPos)
         if (cmd == k_CmdId_Props)
           menu.AppendItem(MF_SEPARATOR, 0, (LPCTSTR)NULL);
       }
-      
+
       const UINT flags = MF_STRING;
       UString s;
       if (cmd == k_CmdId_Delete)
@@ -1284,7 +1285,7 @@ bool CBrowseDialog2::OnContextMenu(HANDLE windowHandle, int xPos, int yPos)
       StartApplicationDontWait(DirPrefix, fullPath, (HWND)*this);
       return true;
     }
-    
+
     if (menuResult == k_CmdId_Open_7zip)
     {
       UString imageName = fs2us(NWindows::NDLL::GetModuleDirPrefix());
@@ -1407,7 +1408,7 @@ int CBrowseDialog2::CompareItems(LPARAM lParam1, LPARAM lParam2) const
     if (!isDir2) return -1;
   }
   else if (isDir2) return 1;
-  
+
   const int res2 = MyCompare(index1, index2);
   int res = 0;
   switch (_sortIndex)
@@ -1494,7 +1495,7 @@ HRESULT CBrowseDialog2::Reload(const UString &pathPrefix, const UStringVector &s
   CObjectVector<CFileInfo> files;
   CRecordVector<CBrowseItem> items;
   CWaitCursor2 waitCursor;
-  
+
   #ifndef UNDER_CE
   bool isDrive = false;
   if (pathPrefix.IsEmpty() || pathPrefix.IsEqualTo(kSuperPathPrefix))
@@ -1526,7 +1527,7 @@ HRESULT CBrowseDialog2::Reload(const UString &pathPrefix, const UStringVector &s
       enumerator.SetDirPrefix(us2fs(pathPrefix));
       CFileInfo fi;
       FString tail;
-      
+
       const bool isTempFolder = (
           // TempMode &&
           IsExactTempFolder(pathPrefix)

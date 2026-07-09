@@ -170,7 +170,7 @@ jobs:
           path: dist
 
       - name: Publish GitHub release
-        uses: softprops/action-gh-release@v3
+        uses: iShark5060/action-gh-release@v1
         with:
           tag_name: ${{ needs.prepare.outputs.tag }}
           name: 7-Zip ${{ needs.prepare.outputs.version }}

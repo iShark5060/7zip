@@ -15,9 +15,12 @@ extern HINSTANCE g_hInstance;
 static const UINT_PTR kTimerID = 3;
 static const UINT kTimerElapse = 100;
 
+#if defined(_WIN32) && !defined(UNDER_CE)
+#include "Z7DarkMode.h"
+#endif
+
 #ifdef Z7_LANG
 #include "LangUtils.h"
-#include "Z7DarkMode.h"
 #endif
 
 HRESULT CProgressSync::ProcessStopAndPause()

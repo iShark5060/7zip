@@ -69,14 +69,14 @@ jobs:
           echo "archive_name=7zip-$version-win64.zip" >> "$GITHUB_OUTPUT"
           echo "Resolved release version $version (tag $version, archive 7zip-$version-win64.zip)"
 
-  build:
+  build-and-release:
     runs-on: windows-latest
     timeout-minutes: 60
 
     needs: [prepare]
 
     permissions:
-      contents: read
+      contents: write
       id-token: write
       attestations: write
 
@@ -141,34 +141,6 @@ jobs:
         with:
           subject-path: dist/${{ needs.prepare.outputs.archive_name }}
 
-      - name: Upload release artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: 7zip-win64-${{ needs.prepare.outputs.version }}
-          path: dist/${{ needs.prepare.outputs.archive_name }}
-          if-no-files-found: error
-
-  release:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    needs: [prepare, build]
-
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          persist-credentials: false
-
-      - name: Download release artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: 7zip-win64-${{ needs.prepare.outputs.version }}
-          path: dist
-
       - name: Publish GitHub release
         uses: iShark5060/actions-gh-release@v1
         with:
@@ -184,7 +156,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
-    needs: [prepare, build, release]
+    needs: [prepare, build-and-release]
     if: ${{ always() }}
 
     steps:
@@ -196,7 +168,7 @@ jobs:
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           status: ${{ contains(needs.*.result, 'failure') && 'failure' || contains(needs.*.result, 'cancelled') && 'cancelled' || contains(needs.*.result, 'skipped') && 'skipped' || 'success' }}
-          content: '<@${{ secrets.DISCORD_USERID }}>'
+          content: "<@${{ secrets.DISCORD_USERID }}>"
           title: ${{ github.workflow }}
           description: ${{ contains(needs.*.result, 'failure') && format('Release {0} failed. Review workflow logs before retrying.', needs.prepare.outputs.version) || contains(needs.*.result, 'cancelled') && format('Release {0} was cancelled.', needs.prepare.outputs.version) || contains(needs.*.result, 'skipped') && format('Release {0} was skipped.', needs.prepare.outputs.version) || format('Release {0} succeeded. Windows x64 build is published with artifact attestation.', needs.prepare.outputs.version) }}
           color: ${{ contains(needs.*.result, 'failure') && '0xff0000' || contains(needs.*.result, 'cancelled') && '0xffaa00' || contains(needs.*.result, 'skipped') && '0x808080' || '0x00ff00' }}

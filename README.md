@@ -1,6 +1,5 @@
 # 7-Zip
 
-[![CI](https://github.com/iShark5060/7zip/actions/workflows/ci.yml/badge.svg)](https://github.com/iShark5060/7zip/actions/workflows/ci.yml)
 [![PR](https://github.com/iShark5060/7zip/actions/workflows/pr.yml/badge.svg)](https://github.com/iShark5060/7zip/actions/workflows/pr.yml)
 ![MSVC](https://img.shields.io/badge/MSVC-nmake-5C2D91?logo=visualstudio&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-x64-0078D6?logo=windows&logoColor=white)

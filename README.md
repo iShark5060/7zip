@@ -5,7 +5,7 @@
 ![Windows](https://img.shields.io/badge/Windows-x64-0078D6?logo=windows&logoColor=white)
 [![Cursor](https://img.shields.io/badge/Cursor-IDE-141414?logo=cursor&logoColor=white)](https://cursor.com)
 
-Personal Windows MSVC fork of [7-Zip](https://7-zip.org) with dark-mode File Manager support.
+Personal Windows MSVC fork of [7-Zip](https://7-zip.org). File Manager with dark mode.
 
 ## Requirements
 

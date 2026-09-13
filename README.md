@@ -9,32 +9,28 @@ Personal Windows MSVC fork of [7-Zip](https://7-zip.org). Same File Manager, wit
 
 Dark mode uses [win32-darkmodelib](https://github.com/ozone10/darkmodelib) as a Git submodule.
 
-## Building the File Manager (7zFM.exe)
+## Building
 
-Visual Studio with Desktop development with C++, and the x64 Native Tools command prompt. Clone with submodules:
+Visual Studio with Desktop development with C++. A normal PowerShell window is enough. `build-windows.ps1` finds `nmake`, inits the dark-mode submodule if needed, and copies the binaries into one folder.
 
-```bat
+```powershell
 git clone --recurse-submodules https://github.com/iShark5060/7zip.git
+cd 7zip
+.\build-windows.ps1
 ```
 
-Or after a normal clone: `git submodule update --init --recursive`.
+That drops `7z.dll`, `7z.exe`, `7zG.exe`, and `7zFM.exe` in `bin\windows-x64`. Useful flags: `-Clean`, `-Platform x64|x86|arm64`, `-OutputDir D:\dist\7zip`.
+
+If you already have an x64 Native Tools prompt and only want File Manager:
 
 ```bat
-cd /d D:\Development\7zip\CPP\7zip\Bundles\Fm
+cd CPP\7zip\Bundles\Fm
 nmake
 ```
 
-Output goes under an `o` folder (or `o64` etc.): `7zFM.exe`.
+Output goes under an `o` folder (or `o64`): `7zFM.exe`. Without dark mode: `nmake Z7_NO_WIN32_DARKMODE=1`.
 
-To build without dark mode: `nmake Z7_NO_WIN32_DARKMODE=1`.
-
-Full-tree Release build (same as CI), from an MSVC-enabled shell at the repo root:
-
-```powershell
-pwsh ./scripts/validate.ps1
-```
-
-See `CPP\7zip\UI\FileManager\third_party\README.md` for how to update the dark-mode submodule.
+`scripts/validate.ps1` is the CI gate (`nmake PLATFORM=x64` under `CPP/7zip`). It needs an MSVC prompt. See `CPP\7zip\UI\FileManager\third_party\README.md` to update the dark-mode submodule.
 
 ## License
 

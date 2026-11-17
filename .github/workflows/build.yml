@@ -1,5 +1,8 @@
 name: "macOS Build"
 
+permissions:
+  contents: read
+
 on:
   workflow_dispatch:
 

@@ -442,7 +442,7 @@ class CTmpProcessInfoRelease
   CTmpProcessInfo *_tmpProcessInfo;
 public:
   bool _needDelete;
-  CTmpProcessInfoRelease(CTmpProcessInfo &tpi):
+  CTmpProcessInfoRelease(CTmpProcessInfo &tpi Z7_lifetimebound):
       _tmpProcessInfo(&tpi), _needDelete(true) {}
   ~CTmpProcessInfoRelease()
   {

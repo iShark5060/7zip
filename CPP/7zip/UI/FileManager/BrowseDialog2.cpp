@@ -1445,7 +1445,7 @@ static int CALLBACK CompareItems2(LPARAM lParam1, LPARAM lParam2, LPARAM lpData)
 }
 
 
-static const FChar *FindNonHexChar_F(const FChar *s) throw()
+static const FChar *FindNonHexChar_F(const FChar *s Z7_lifetimebound) throw()
 {
   for (;;)
   {
